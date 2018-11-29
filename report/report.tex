@@ -1,0 +1,111 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[english, science, small]{ku-frontpage}
+\usepackage[utf8]{inputenc}
+\usepackage[cache=false]{minted}
+\usepackage{caption}
+
+% Math stuff
+\usepackage{amsmath,amssymb,mathtools,bm,etoolbox,stmaryrd}
+% verctor command. Usage: \colvec{5}{a}{b}{c}{d}{e}
+\newcount\colveccount
+\newcommand*\colvec[1]{
+	\global\colveccount#1
+	\begin{pmatrix}
+		\colvecnext
+	}
+	\def\colvecnext#1{
+		#1
+		\global\advance\colveccount-1
+		\ifnum\colveccount>0
+		\\
+		\expandafter\colvecnext
+		\else
+	\end{pmatrix}
+	\fi
+}
+
+% que dymbol, textmode
+\newcommand*{\qed}{\hfill\ensuremath{\square}}%
+
+% TOC properties
+\setlength\arraycolsep{2 pt}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+
+\author{Per Steffen Czolbe (wjq874)}
+\title{Reinforcement Learning with LEGO Mindstorms}
+\subtitle{Project Report}
+\date{Handed in: \today}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+
+
+
+\section{The ev3 robot}
+
+\subsection{Hardware}
+central component: the "brick"
+cpu: 32bit, 300MHz ARM9 Processor
+Memory: 64MB DDR RAM
+Storage: 16MB Flash
+up to 32gb SD-card
+
+Communication:
+USB
+Bluetooth
+wifi
+
+Periferals:
+up to 4 motors and 4 sensors.
+
+src: LEGO MINDSTORMS EV3 Hardware Developer Kit (pdf) ©2013 The LEGO Group
+
+
+\subsection{Default Software}
+The ev3 is shipped with LEGOs own graphical programming software, based on the visual programming language LabVIEW.
+
+Many community driven software packages exist. These support languages such as matlab, python, java, javascript, C++, C, GO, Ruby, Perl, R, Lue and may more (src: https://www.ev3dev.org/docs/programming-languages/). Direct control of the robot via command line is also possible.
+
+\subsection{New software: ev3dev}
+"ev3dev is a Debian Linux-based operating system that runs on several LEGO® MINDSTORMS compatible platforms including the LEGO® MINDSTORMS EV3 and Raspberry Pi-powered BrickPi." src: https://www.ev3dev.org/
+
+Because of the limited storage available on the Brick, this ~2GB linux image has to be added to the ev3 via an SD-Card.
+
+\subsection{External Computer for computations}
+While the brick runs a fully fletched linux system that can execute programms on it's own, the processing and memory contraints of the brick limit development of programms severely. Installing a new python package with pip often takes over 2 minutes. Installing deep learning frameworks like tensorflow, or performing image processing on the brick is expected to lead to severe sortages of processing power. Thus we want to run these more computationally expensive parts of the program on a seperate computer.
+
+The setup of a main programm running on a computer and only interacting with the brick when nessesary to move motors or read sensor data has been employed by multiple community projects, such as the LEGO rubics cube solver. (src: https://www.ev3dev.org/projects/2014/05/09/Python-Rubiks-Cube-Solver/) We follow the same design approach implemented in these projects. The brick runs a remote procedure call server, implemented by the python3 libary `rpyc`. This allows other computers to connect to the brick as clients and remotely interact with the python libary controlling the robot functions. All program logic is implemented on the computer, the brick is merely listening to commands. Next to the performance gains, another benefit is that the programm can be executed in a jupyter notebook on the computer, which allows better integration of documentation and visualizations within the programm.
+
+\section{Sensors and Motors}
+
+\subsection{Time Delays}
+
+
+\subsection{Motor Accuracy}
+
+
+\subsection{Ultrasound Sensor Accuracy}
+
+\subsection{Gyroscope accuracy}
+
+
+\subsection{Need for calibration}
+- most sensors no calibration
+- motors and gyroscope have their 0-rotation initialized at system start. This makes reclibration nessesary every time the system is restarted. The robots should be designed with this in mind. For motors, automatic calibration can be achieved by having them hit against a push sensor first
+
+\subsection{General building techniques}
+- as simple and robust as possible
+- 
+
+
+\section{Colour Detection}
+
+\section{Crawl-Robot}
+
+
+
+\end{document}
