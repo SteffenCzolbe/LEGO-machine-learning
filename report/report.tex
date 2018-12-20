@@ -40,14 +40,19 @@
 \begin{document}
 \maketitle
 
+\section{Abstract}
+
 \tableofcontents
 
 
+\section{Introduction}
+scientific goal,
+educational goals,
+agenda by lego
 
+\subsection{The ev3 robot}
 
-\section{The ev3 robot}
-
-\subsection{Hardware}
+\subsubsection{Hardware}
 central component: the "brick"
 cpu: 32bit, 300MHz ARM9 Processor
 Memory: 64MB DDR RAM
@@ -65,10 +70,15 @@ up to 4 motors and 4 sensors.
 src: LEGO MINDSTORMS EV3 Hardware Developer Kit (pdf) ©2013 The LEGO Group
 
 
-\subsection{Default Software}
+\subsubsection{Default Software}
 The ev3 is shipped with LEGOs own graphical programming software, based on the visual programming language LabVIEW.
 
 Many community driven software packages exist. These support languages such as matlab, python, java, javascript, C++, C, GO, Ruby, Perl, R, Lue and may more (src: https://www.ev3dev.org/docs/programming-languages/). Direct control of the robot via command line is also possible.
+
+
+
+\section{Development Setup}
+- tutorial style description of how to get things to run with jupyter notebook.
 
 \subsection{New software: ev3dev}
 "ev3dev is a Debian Linux-based operating system that runs on several LEGO® MINDSTORMS compatible platforms including the LEGO® MINDSTORMS EV3 and Raspberry Pi-powered BrickPi." src: https://www.ev3dev.org/
@@ -81,17 +91,19 @@ While the brick runs a fully fletched linux system that can execute programms on
 The setup of a main programm running on a computer and only interacting with the brick when nessesary to move motors or read sensor data has been employed by multiple community projects, such as the LEGO rubics cube solver. (src: https://www.ev3dev.org/projects/2014/05/09/Python-Rubiks-Cube-Solver/) We follow the same design approach implemented in these projects. The brick runs a remote procedure call server, implemented by the python3 libary `rpyc`. This allows other computers to connect to the brick as clients and remotely interact with the python libary controlling the robot functions. All program logic is implemented on the computer, the brick is merely listening to commands. Next to the performance gains, another benefit is that the programm can be executed in a jupyter notebook on the computer, which allows better integration of documentation and visualizations within the programm.
 
 \section{Sensors and Motors}
+experiments, description of how to interact with modules
 
 \subsection{Time Delays}
-
+Asger
 
 \subsection{Motor Accuracy}
-
-
-\subsection{Ultrasound Sensor Accuracy}
-
+Steffen
 \subsection{Gyroscope accuracy}
 
+\subsection{The Ultrasound Sensor}
+Steffen
+\subsection{The Colour Sensor}
+Asger
 
 \subsection{Need for calibration}
 - most sensors no calibration
@@ -101,11 +113,50 @@ The setup of a main programm running on a computer and only interacting with the
 - as simple and robust as possible
 - 
 
+\section{Reinforcement Learning with LEGO Mindstorms}
+general issues arising when working with actual robots vs simulation
 
 \section{Colour Detection}
+Asger
+\subsection{Problem}
+what task solved
+\subsection{The Robot}
+description of the robot build
+\subsection{The Learning}
+implementation of learning, choices made in picking and implementing algorithm
+\subsection{Results}
+final results
+\subsection{Discussion}
+includes issues / future work
 
 \section{Crawl-Robot}
+Steffen
+\subsection{Problem}
+what task solved
+\subsection{The Robot}
+description of the robot build
+\subsection{The Learning}
+implementation of learning, choices made in picking and implementing algorithm
+\subsection{Results}
+final results
+\subsection{Discussion}
+includes issues / future work
 
+\section{Swing-Robot}
 
+\subsection{Problem}
+what task solved
+\subsection{The Robot}
+description of the robot build
+\subsection{The Learning}
+implementation of learning, choices made in picking and implementing algorithm
+\subsection{Results}
+final results
+\subsection{Discussion}
+includes issues / future work
+
+\section{Future Work}
+Shared/independant
+future robots/  multi actor learning
 
 \end{document}
