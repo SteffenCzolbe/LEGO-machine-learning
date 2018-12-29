@@ -96,8 +96,79 @@ experiments, description of how to interact with modules
 \subsection{Time Delays}
 Asger
 
-\subsection{Motor Accuracy}
-Steffen
+\subsection{Motors}
+The LEGO product line includes a variety of 9V DC electrical motors, which can be used to power a wide range of LEGO models, such as cars, trains and robots. The current product offering consists of two main families: ``Power Functions'' motors and ``EV3'' motors. The most common sizes of these product lines are shown in figure \ref{fig:motors}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\linewidth]{images/motors}
+\caption{Overview of current (2018) LEGO motors. Upper row: Power Functions large and X-large motor. Bottom row: EV3 medium and large motor}
+\label{fig:motors}
+\end{figure}
+
+
+\subsubsection*{Power Functions Motors}
+The ``Power Functions'' line of motors is designed to work with a battery pack and is intended to be controlled either with a physical switch on the battery pack or a remote control. Adapters for the power cables are required to use them in combination with the EV3 platform. \cite{power_fun}
+
+By changing the current and polarity of the DC power supply, these motors can spin in both directions and different speeds. Because `Power Functions'' motors do not measure rotation or angle, robots utilizing them often require other means of measuring mechanical movements. Compared to the EV3 motors, they offer similar torque and mechanical power, have faster reaction speeds but offer no feedback. \cite{motor_comparison}
+
+
+\subsubsection*{EV3 Servo Motors}
+The EV3 robot kit contains a medium and two large servo motors. The EV3 motors use tacho feedback to measure their alignment and rotation, which allows for more precise control compared to ``Power Functions'' motors. \cite{Servo_Motor}. In strength and speed they are comparable to their ``Power Functions'' counterparts. The large EV3 motor is roughly twice as powerful as the medium one, and comes in a bigger case with different mounting points. Detailed comparisons of the mechanical and electrical properties of all LEGO motors is available at \cite{motor_comparison}.
+
+The ev3dev programming environment offers functions for low level interactions with the EV3 motors. Available are methods to start and stop the motor, reading the angle, setting the speed and 3 different stopping patterns (coast, brake and hold). The medium and large EV3 Motor offer identical programming interfaces. For angle measurements, the motor saves the rotation at system start as 0 degrees. During operation, the current rotation angle offset to the starting point can be read by the motor. \cite{ev3_python}
+
+\subsection*{Motor Accuracy}
+Training reinforcement learning algorithms requires repetition of the same motions many times. To assume a non-adversarial environment and ensure reproduce-ability of the results, actions taken by the motors need to be accurate and consistent. We design an experiment to measure the accuracy of the motors after a series of repeated actions.
+
+\subsubsection*{Experimental Setup}
+The experiment consists of an arm attached to a motor. We rotate the arm in a 90 degree angle back and forth. After every 25 iterations we measure the offset from the starting position externally with a set square. To measure the influence of weight on the results we use two independent arms, one without a weight and the other one weighted by three heavy metals balls. The experimental set-up is shown in figure \ref{fig:angle_experiment}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.35\linewidth]{images/angle_experiment}
+\caption{Experiment to measure motor accuracy. The two arms (gray) swing back and forth in a 90 degree angle. One arm is weighted down by three heavy metal balls.}
+\label{fig:angle_experiment}
+\end{figure}
+
+
+
+The ev3dev python bindings offer two different movement patterns: \texttt{'on\_for\_degrees()'}, which rotates the motor relative to the current position, and \texttt{'move\_to\_pos()'}, which rotates the motors to an absolute value.  Further, three stopping patterns exists: \texttt{'brake'}, \texttt{'hold'} and \texttt{'coast'}. In the experiment we will test different combinations of movement and holding patterns, to determine the configuration with the highest amount of accuracy and reproducibility. Since we want high accuracy, we do not test the coasting setting. 
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|l|l|l|l|l|l|l|}
+		\hline
+		Move Pattern & Stop Pattern & Weight & offset after 25 iterations & after 50it & after 75it             & after 100it            \\ \hline \hline
+		relational   & hold         & no     & 1             & 1    & 2                & 2                \\ \hline
+		relational   & hold         & yes    & 9             & 11   & 35               & 45               \\ \hline
+		relational   & brake        & no     & 1             & 1    & 1                & 2                \\ \hline
+		relational   & brake        & yes    & 35            & 50   & \textgreater{}50 & \textgreater{}50 \\ \hline
+		absolute     & hold         & no     & 0             & 1    & 2                & 1                \\ \hline
+		absolute     & hold         & yes    & 2             & 1    & 4                & 3                \\ \hline
+		absolute     & brake        & no     & 1             & 2    & 2                & 3                \\ \hline
+		absolute     & brake        & yes    & 4             & 6    & 5                & 4                \\ \hline
+	\end{tabular}
+	\caption{Experimental result. Angle offset in degrees after 25, 50, 75 and 100 iterations for different configurations.}
+	\label{tab:angle_experiment}
+\end{table}
+
+
+\subsubsection*{Results}
+The angle offsets measured after 25, 50, 75 and 100 iterations for different motor control settings and configurations are shown in table \ref{fig:angle_experiment}. As we can see, the non-weighted arm is very accurate in all scenarios. The results for the weighted arm differ drastically between configurations. We can observe two trends:
+\begin{enumerate}
+	\item The \texttt{'brake'} stopping pattern creates more offset than the \texttt{'hold'} pattern. Further observations of the experiment let us conclude that \texttt{'brake'} stops the motion of the motor, but does not block the motor for further movement after the initial momentum has been eliminated. This leads to the weighted arm pulling slightly further down between the breaking phase and the next swing of the arm. The \texttt{'hold'} stop motion holds the arm in place even after the initial momentum is eliminated. It leads to more accurate results under load.
+	\item Movements ot absolute positions are more precise than relative movements. While inaccuracies of relative movements accumulate over time, movements to absolute positions only carry the inaccuracy of the last movement.
+\end{enumerate}
+During the experiment we also measured the range of motion that is possible without receiving any push-back from the motors. This amount of slack is consistently measured at about 12 degrees. No configuration lowered this inaccuracy. If it causes a problem later on, mechanical solutions such as a worm gear could be used to reduce the slack.
+
+\bigskip
+In conclusion, to attain the highest level of accuracy and reproducibility, motors should be moved to absolute positions and the stop pattern \texttt{'hold'} should be used. We note however that motors still allow for free movement of about 12 degrees without providing any breaking or pushback.
+
+
+
+
 \subsection{Gyroscope accuracy}
 
 \subsection{The Ultrasound Sensor}
@@ -158,5 +229,11 @@ includes issues / future work
 \section{Future Work}
 Shared/independant
 future robots/  multi actor learning
+
+\section{Individual contributions}
+
+
+\bibliographystyle{abbrv}
+\bibliography{references}
 
 \end{document}
