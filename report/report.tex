@@ -3,6 +3,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage[cache=false]{minted}
 \usepackage{caption}
+\usepackage{subcaption}
+\usepackage[linesnumbered,ruled]{algorithm2e}
+\usepackage{algpseudocode}
 
 % Math stuff
 \usepackage{amsmath,amssymb,mathtools,bm,etoolbox,stmaryrd}
@@ -50,49 +53,40 @@ scientific goal,
 educational goals,
 agenda by lego
 
-\subsection{The ev3 robot}
+\subsection{EV3 robot}
+The EV3 system is the third version of the LEGO Mindstorm family of robot toys. It contains a central processing component, called ''Brick``, to which motors, sensors and other peripheral devices can be attached. All these components are embedded into plastic casings, which make them compatible with other LEGO parts. The LEGO Group markets the EV3 system to educational facilities and private persons in a package with build instructions and parts for multiple robots. The current product offering consists of 2 different packages to build a total of 9 robots, including the self-balancing two wheeled ``Gyroboy'' and a sorting machine that orders LEGO bricks based on their colour. The playful development of further robots by end users is encouraged. A large community of engaged hobby robot builders has formed around the EV3 platform.
 
-\subsubsection{Hardware}
-central component: the "brick"
-cpu: 32bit, 300MHz ARM9 Processor
-Memory: 64MB DDR RAM
-Storage: 16MB Flash
-up to 32gb SD-card
-
-Communication:
-USB
-Bluetooth
-wifi
-
-Periferals:
-up to 4 motors and 4 sensors.
-
-src: LEGO MINDSTORMS EV3 Hardware Developer Kit (pdf) ©2013 The LEGO Group
+\subsubsection*{Hardware}
+The Brick is the central processing component of each EV3 robot. It can be controlled via multiple buttons, features a small LCD screen and can be connected to a computer via Wifi, Bluetooth or USB. For peripherals, up to 4 motors and 4 Sensors can be connected. The specifications of the embedded system are \cite{ev3_dev_toolkit}:
+\begin{listing}
+	CPU: 32bit, 300MHz ARM9 Processor \\
+	Memory: 64Mb DDR RAM\\
+	Storage: 16Mb Flash, up to 32Gb SD-Card \\
+	Communication: USB, Bluetooth, Wifi \\
+	Peripherals: 4 motors, 4 Sensors
+\end{listing}
 
 
-\subsubsection{Default Software}
-The ev3 is shipped with LEGOs own graphical programming software, based on the visual programming language LabVIEW.
+\subsubsection{Software}
+The LEGO company ships the EV3 platform with a software system centred around its own proprietary graphical programming language based on LabVIEW. The graphical interface enables people with limited programming experience to quickly develop simple programs that can be executed on the Brick. The graphical language is supported by an editor available as a program for Windows and Mac, and as an app for Android and iOS.
 
-Many community driven software packages exist. These support languages such as matlab, python, java, javascript, C++, C, GO, Ruby, Perl, R, Lue and may more (src: https://www.ev3dev.org/docs/programming-languages/). Direct control of the robot via command line is also possible.
+While the default software is well supported by the editor and operating system of the brick, more experienced programmers might prefer a more capable language. Multiple community driven software packages exist for this purpose. These support languages such as matlab, python, java, javascript, C++, C, GO, Ruby, Perl, R, Lua, even direct control of the robot via command line is possible \cite{ev3dev}. We discuss a specific development set up in the next section.
 
 
 
 \section{Development Setup}
-- tutorial style description of how to get things to run with jupyter notebook.
+In this section we present the development set up chosen for this project. It consists of the open source operating system ev3dev to power the brick, the ev3dev python library to control motors and sensors, and remote procedure calls to communicate with the robot from a host computer the via jupyter notebook.
 
-\subsection{New software: ev3dev}
-"ev3dev is a Debian Linux-based operating system that runs on several LEGO® MINDSTORMS compatible platforms including the LEGO® MINDSTORMS EV3 and Raspberry Pi-powered BrickPi." src: https://www.ev3dev.org/
+\subsection{Ev3dev Platform}
+Ev3dev is a Debian Linux-based operating system that runs on several LEGO Mindstorms compatible platforms including the LEGO Mindstorms EV3 and Raspberry Pi-powered BrickPi. It is maintained by a community of enthusiasts and offers libraries to interact with LEGO Mindstorms motors and sensors in many programming languages, such as Java, Ruby and Python \cite{ev3dev}. The Linux disk image can be downloaded at \href{https://www.ev3dev.org/}{www.ev3dev.org} and flashed on a SD card. Once the SD card is inserted into the LEGO Mindstorms brick, the brick will boot into the ev3dev operating system. A set up guide with detailed explanations on installation and guides on how to get started with development are available at the ev3 website.
 
-Because of the limited storage available on the Brick, this ~2GB linux image has to be added to the ev3 via an SD-Card.
+\subsection{Control by external Computer}
+While the brick, after flashed with the ev3dev image, runs a Debian Linux system that can execute general purpose programs, the processing and memory constraints imposed by the hardware limit the complexity of programs executed on the brick severely. Installing a python package takes 2 minutes. Executing more computationally expensive tasks like deep learning or real time video processing on the brick is not feasible.
 
-\subsection{External Computer for computations}
-While the brick runs a fully fletched linux system that can execute programms on it's own, the processing and memory contraints of the brick limit development of programms severely. Installing a new python package with pip often takes over 2 minutes. Installing deep learning frameworks like tensorflow, or performing image processing on the brick is expected to lead to severe sortages of processing power. Thus we want to run these more computationally expensive parts of the program on a seperate computer.
-
-The setup of a main programm running on a computer and only interacting with the brick when nessesary to move motors or read sensor data has been employed by multiple community projects, such as the LEGO rubics cube solver. (src: https://www.ev3dev.org/projects/2014/05/09/Python-Rubiks-Cube-Solver/) We follow the same design approach implemented in these projects. The brick runs a remote procedure call server, implemented by the python3 libary `rpyc`. This allows other computers to connect to the brick as clients and remotely interact with the python libary controlling the robot functions. All program logic is implemented on the computer, the brick is merely listening to commands. Next to the performance gains, another benefit is that the programm can be executed in a jupyter notebook on the computer, which allows better integration of documentation and visualizations within the programm.
+To circumvent these problems, a setup of the main program running on a computer and interacting with the brick to move motors or read sensor data has been employed by multiple community projects, such as a rubics cube solver \cite{ev3_rubics}. We follow the design approach pioneered by these projects. The brick runs a remote procedure call server, implemented by the python3 library \texttt{rpyc}. This allows a host computer to connect to the brick and remotely interact with motors and sensors. All program logic is executed on the computer, the brick is listening to commands. Next to the performance improvements, another benefit is that the program can be executed in a jupyter notebook on the computer, which allows to better integrate documentation and visualization into the development process.
 
 \section{Sensors and Motors}
-experiments, description of how to interact with modules
-
+In this section we examine the peripheral devices of the EV3 platform. We examine the behaviour of motors and sensors, design experiments to measure accuracy and time delays. We discuss the need for calibration and give general advice on building solid and functional robots.
 \subsection{Time Delays}
 Asger
 
@@ -101,8 +95,8 @@ The LEGO product line includes a variety of 9V DC electrical motors, which can b
 
 \begin{figure}
 \centering
-\includegraphics[width=0.6\linewidth]{images/motors}
-\caption{Overview of current (2018) LEGO motors. Upper row: Power Functions large and X-large motor. Bottom row: EV3 medium and large motor}
+\includegraphics[width=0.4\linewidth]{images/motors}
+\caption{Overview of current (2018) LEGO motors. Upper row: Power Functions large and X-large motor. Bottom row: EV3 medium and large motor. Images from \cite{motor_comparison}.}
 \label{fig:motors}
 \end{figure}
 
@@ -119,7 +113,7 @@ The EV3 robot kit contains a medium and two large servo motors. The EV3 motors u
 The ev3dev programming environment offers functions for low level interactions with the EV3 motors. Available are methods to start and stop the motor, reading the angle, setting the speed and 3 different stopping patterns (coast, brake and hold). The medium and large EV3 Motor offer identical programming interfaces. For angle measurements, the motor saves the rotation at system start as 0 degrees. During operation, the current rotation angle offset to the starting point can be read by the motor. \cite{ev3_python}
 
 \subsection*{Motor Accuracy}
-Training reinforcement learning algorithms requires repetition of the same motions many times. To assume a non-adversarial environment and ensure reproduce-ability of the results, actions taken by the motors need to be accurate and consistent. We design an experiment to measure the accuracy of the motors after a series of repeated actions.
+Reinforcement learning algorithms rely on repetition of the same motions many times. To assume a non-adversarial environment and ensure reproducible results, actions taken by the motors need to be accurate and consistent. We design an experiment to measure the accuracy of the motors after a series of repeated actions.
 
 \subsubsection*{Experimental Setup}
 The experiment consists of an arm attached to a motor. We rotate the arm in a 90 degree angle back and forth. After every 25 iterations we measure the offset from the starting position externally with a set square. To measure the influence of weight on the results we use two independent arms, one without a weight and the other one weighted by three heavy metals balls. The experimental set-up is shown in figure \ref{fig:angle_experiment}.
@@ -171,18 +165,38 @@ In conclusion, to attain the highest level of accuracy and reproducibility, moto
 
 \subsection{Gyroscope accuracy}
 
-\subsection{The Ultrasound Sensor}
-Steffen
+\subsection{Ultrasonic Sensor}
+The EV3 Ultrasonic Sensor generates sound waves and reads their echoes to detect and measure distance from objects. It can also send single sound waves to work as sonar or listen for a sound wave that triggers the start of a program. Distances mesured range from 0-250cm. While the python bindings of this sensor return a distance measurement with an accuracy of up to 1mm \cite{ev3_python}, LEGO advertises an accuracy of  ``up to +/-1cm''. \cite{ultraosnic_sensor}
+
+While working with the sensor on the crawling robot, we noticed the importance of mounting the sensor on a stable frame. It should not tilt vertically or horizontally, as any change in angles also changes the distance to a target. To attain accurate and reliable distance measurements, the target should be a rather large, solid plane, oriented orthogonal to the ultrasonic waves emitted by the sensor. The accuracy is sufficient to measure sub-centimetre movements. Roughly 0.1\% of measurements were faulty and reported the maximum distance value of 255cm. No further experiments to evaluate the accuracy of the ultrasonic sensor have been performed.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.3\linewidth]{images/ultrasonic}
+	\caption{The EV3 ultrasonic sensor. Image from \cite{ultraosnic_sensor}.}
+	\label{fig:ultrasonic}
+\end{figure}
+
+
 \subsection{The Colour Sensor}
 Asger
 
-\subsection{Need for calibration}
-- most sensors no calibration
-- motors and gyroscope have their 0-rotation initialized at system start. This makes reclibration nessesary every time the system is restarted. The robots should be designed with this in mind. For motors, automatic calibration can be achieved by having them hit against a push sensor first
+\subsection{Calibration} \label{calibration}
+Servo motors and gyroscope sensors are initialized when the brick is restarted. All other sensors require no calibration.
 
-\subsection{General building techniques}
-- as simple and robust as possible
-- 
+On system start, the position of the motor is initialized as 0 degrees. If the robot is dependent on absolute positional values, it is important to calibrate the 0-point. This can either be done by moving the motor forcefully into the correct position before starting the brick, or using more elaborate constructions of moving the motor against a button, until the button is pressed. This gives certainty over the 0-position of the motor and can be used to calibrate the rotation.
+
+The gyroscope initializes its orientation at system start as 0 degrees. Further, it assumes to be not in motion during system start. All acceleration measurements are in relation to this value taken during system start. Since the rotational angle returned by the gyroscope is calculated as the integral over acceleration measurements, even a slight inaccuracy in acceleration will accumulate to a significant drift in angle over time. This drift has to be monitored and adjusted for. This can be done either programmatic, or by restarting the system to re-calibrate the sensor.
+
+
+\subsection{Building Techniques}
+During the building process, multiple key takeaways for building with LEGO were:
+\begin{itemize}
+	\item To improve reproducibility of experiments, the LEGO builds should be as solid as possible. Big, complicated constructions tend to flex and bend. Small, simple and solid designs are most easy to work with.
+	\item Avoid using gears and other moving parts as much as possible. These introduce additional complexity, points of failure and tend to make the build less rigid.
+	\item Account for plenty of space for cables. Motors and sensors need to be connected to the brick with stiff cables. Additionally, leave space for the charging cable and a USB connection to a computer.
+\end{itemize}
+
 
 \section{Reinforcement Learning with LEGO Mindstorms}
 general issues arising when working with actual robots vs simulation
@@ -200,21 +214,139 @@ final results
 \subsection{Discussion}
 includes issues / future work
 
+\pagebreak
 \section{Crawl-Robot}
-Steffen
-\subsection{Problem}
-what task solved
-\subsection{The Robot}
-description of the robot build
-\subsection{The Learning}
-implementation of learning, choices made in picking and implementing algorithm
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\linewidth]{images/crawl_robot}
+	\caption{Crawl Robot, frontal view.}
+	\label{fig:crawl_robot}
+\end{figure}
+We seek to demonstrate reinforcement learning on a simple robot. While many robot designs and learning goals are possible, we selected a crawling robot as a suitable object for demonstration. The concept of a robot using one arm to crawl, or drag itself along a linear track has been explored by multiple other studies \cite{youtube_crawl2} \cite{youtube_crawl}. We selected this task first, as it is a comparatively simple design and we know the problem can be solved. Realizing this robot will equip us with the experience and knowledge to solve more complex problems in the future.
+
+
+\subsection{Robot Design}
+To facilitate the crawling motion, the robot needs a movable arm to pull itself forward. The arm consist of two elements: the base arm, which is attached to the robot, and a pivot arm attached to the base arm. Both arm joints rotate around the same axis, allowing the hand at the far end of the pivot to move on a plane. To allow the arm to pull the robot, the ground friction of the arm has to be maximized, and the ground friction of the robot minimized. This is achieved by a big rubber tyre firmly attached (not spinning) to the robots hand. The robot body sits on wheels which can spin freely. See figure \ref{fig:crawl_robot} for a photo of the robot arm, hand and wheel basis.
+
+To measure distance travelled, the ultrasonic sensor is used. This sensor is attached to the back of the robot and records the distance to a target from the rear end of the robot. As the wheel basis of the robot might tilt when the arm is pressing into the ground, while the ultrasonic sensor requires a stable angle towards the target for consistent measurements, the sensor is mounted on a sled which is pulled behind the robot. The sled is visible in figure \ref{fig:sub2}.
+
+To calibrate the motors of the arm, two buttons are attached to the top of the robot. During the start up process, the arm is moved all the way back, until base arm and pivot arm hit their respective buttons. This motion is depicted in figure \ref{fig:sub1}. The certainty about the arm position attained by this action is used to initialize the 0-angle of both motors.
+
+\begin{figure}
+	\centering
+
+	\begin{subfigure}{.4\textwidth}
+		\centering
+		\includegraphics[width=0.8\linewidth]{images/crawl_sled}
+		\caption{Ultrasonic sensor on a sled at the back of the robot.}
+		\label{fig:sub2}
+	\end{subfigure}
+	\begin{subfigure}{.4\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{images/crawl_calibrate}
+		\caption{calibrating motion of the crawl robot.}
+		\label{fig:sub1}
+	\end{subfigure}%
+	\caption{Designs of the Crawl Robot}
+	\label{fig:test}
+\end{figure}
+
+\subsection{Formulation of the Learning Problem}
+To train the robot how to crawl, we use Q-learning. O-learning is a form of reinforcement learning. It provides agents with the capability of learning to act optimally in Markovian domains by experiencing the consequences of actions. To learn, an agent tries an action at a particular state, and evaluates its consequences in terms of the immediate reward or penalty it receives and its estimate of the value of the state to which it is taken. By trying all actions $A$ in all states $S$ repeatedly, it learns which are best overall, judged by long-term discounted reward \cite{Watkins1992}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{images/crawl_states}
+	\caption{Arm positions (states) of the crawl robot. From top to bottom: Pivot arm in positions far, mid, close. From left to right: Base arm in positions up, mid, down. The tilt of the robot base in the right column is caused by the arm pressing into the floor.}
+	\label{fig:crawl_states}
+\end{figure}
+
+The Q-learning algorithm fits the domain of the crawl robot. The implementation chosen is shown in Algorithm \ref{alg:q-learn} and follows \cite{sutton1998introduction}. We model an action as moving the arm. The immediate reward or penalty received is proportional to the distance traveled by performing the action, as measured by the ultrasonic sensor. As learning speed is of importance, we define a discrete state space with 9 states. These states are displayed in figure \ref{fig:crawl_states}. We could have sub divided the arm movement plane into more states, but learning is expected to take longer as more states have to be explored by the learning algorithm. More formally, the choices for the action-space $A$ and state space $S$ are:
+\begin{align*}
+	A = \{ &\text{ move base arm up}, \text{ move base arm down} , \text{ move pivot arm far}, \text{ move pivot arm closer}\} \\
+	S = \{ &\text{base up pivot far}, \text{ base mid pivot far}, \text{ base down pivot far}, \\
+	       &\text{base up pivot mid}, \text{ base mid pivot mid}, \text{ base down pivot mid},\\
+	       &\text{base up pivot down}, \text{ base mid pivot down}, \text{ base down pivot down},\} \\
+\end{align*}
+The intial state for each epoch is given by $s_0 = \text{base up pivot far}$, which is the furthest extension of the arm. We select learning rate $\alpha = 0.5$, discount rate $\gamma = 0.8$. The exploration factor $\epsilon$ is initially set to $0.5$ and declines exponentially throughout training. We train for a maximum of $100$ epochs with $35$ steps per epoch.
+\begin{algorithm}[]
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	
+	\Input{learning rate $\alpha \in ]0,1]$, discount rate $\gamma \in [0,1[$}
+	initialize $Q(s, a)$ with $0$ for all $s,a$\\
+	\ForEach{epoch}
+	{
+		return to initial state $s_0$ \\
+		\Repeat{epoch end}
+		{
+			sample $x$ uniform at random for $[0,1]$ \\
+			\eIf{$x < \epsilon$}
+			{sample $a$ at random}
+			{select $a \leftarrow \arg \max_a(Q(s,a))$}	
+			take action $a$, observe $r, s'$ \\
+			$Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \  max_{a'} Q(s', a') - Q(s,a)]$ \\
+			$s \leftarrow s'$
+		}
+		
+	}
+	\Output{state value function $Q$}
+	\caption{Q-learning with $\epsilon$-greedy exploration}
+	\label{alg:q-learn}
+\end{algorithm}
+
+
+
+
+
 \subsection{Results}
-final results
+The crawl robot was trained using tabular Q-learning with the parameter choices stated in the previous section. In this section we discuss the training process and the learned result. For training, the robot is placed on a linear track. At the back of the robot, a solid target is placed to act as a point for range measurement by the ultrasonic sensor. During training, the robot explores actions and moves back and forth on the linear track. 
+
+After 20 minutes of training, the learned motion appeared near perfect and training was stopped. This corresponds to 65 epochs of training, for a total of 2275 actions. The reward gathered in each epoch is plotted in figure \ref{fig:crawl_reward}. We can see that the reward gathered in each epoch has a clear upward trend, indicating that the robot got progressively better at the task. The exploration factor is exponentially declining, as shown in figure \ref{fig:crawl_exploration}. This leads to less exploration in later epochs. The result of this is visible in the reward plot, as in later epochs the results get more consistent.
+
+The robot is not fully autonomous during training. It requires human intervention in three cases:
+\begin{itemize}
+	\item The ultrasonic sensor has a maximum range of 250cm. If the robot moves further away from its range measuring target, it can no longer track rewards. Similarly, if it pushes into the range finding target, it can not move further into the direction of the target. Both cases disrupt assessing the rewards of actions. To handle these cases, the robot will interrupt training when it gets too close to either end of the spectrum. Training is resumed once the robot is manually placed on a valid part of the training track.
+	\item To properly assess the range to it's range measuring target, the ultrasonic sensor needs to be orthogonal to the target. If the robot rotates during training, the angle to the range finding target can change. An angle significantly different from 90 degrees leads to skewed reward tracking, and in special cases the sensor can no longer find the target, which prohibits range measuring entirely. If the orientation of the robot changes significantly, it has to be manually rotated to its initial position.
+	\item In rare cases, the motors of the arm have slightly too little torque to push against resistance caused by the hand hitting the floor. The motors become stuck. In these cases the robot needs to be slightly pushed to overcome the resistance and release the motors.
+\end{itemize}
+
+A recording of the full training and a presentation of the learned motion is accessible as a video online at \href{https://youtu.be/NUTv-oNWEYo}{youtu.be/NUTv-oNWEYo}. The video shown the training process at 7 times normal speed. Manual interaction is shown as well.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{images/crawl_rewards}
+		\caption{Reward gathered per Epoch. An improvement is clearly visible.}
+		\label{fig:crawl_reward}
+	\end{subfigure}
+	\begin{subfigure}{.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{images/crawl_exploration}
+		\caption{Exponential decline of the exploration rate.}
+		\label{fig:crawl_exploration}
+	\end{subfigure}%
+	\caption{Q-learning of the Crawl Robot}
+	\label{fig:crawl_train}
+\end{figure}
+
+
 \subsection{Discussion}
-includes issues / future work
+With the presented framework, the crawling robot is able to learn a forward crawling motion in 20 minutes. As the training process requires constant human interaction for resetting the robot, we think this amount training time is appropriate. Especially in educational settings it should be considered as an upper limit. Since the training is interactive, observing how the robot develops an increasingly stronger forwards drive during training is quite rewarding to the observer. 
 
+The learned motion is not smooth and appears abrupt, which results from the use of a discrete state space. Learning a crawling motion with this robot on a continuous state space has the potential of leading to a smoother, and possibly faster movement. A possible drawback is increased training time. Moving the arm on a continuous state space is a topic for future research.
+
+The robot construction can be improved in the future. The current design has some mechanical issues, such as the strength of the motors in the arm and a tendency to slightly drift off the linear direction of movement. These problems could be addressed by re-constructing the robot and track of movement. A guide rail could constrict sideways the movement and gear conversions in the arm can be used to increase torque. The need for human supervision could be reduced by introducing a third motor to automatically move the robot back to its starting position after every epoch.
+
+\medskip
+In conclusion, we build a one-armed robot using LEGO parts, motors and sensors. We formulated a tabular q-learning problem with the goal of teaching the robot how to crawl. With some human interaction, the robot learned a forward crawling motion in 20 minutes. 
+
+
+
+
+\pagebreak
 \section{Swing-Robot}
-
 \subsection{Problem}
 what task solved
 \subsection{The Robot}
@@ -231,6 +363,27 @@ Shared/independant
 future robots/  multi actor learning
 
 \section{Individual contributions}
+Table \ref{tab:contributions} shows the individual contributions to the report by each of the graded students.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|l}
+		Steffen & Asger \\ \hline
+		Introduction &       \\
+		Development Setup & \\
+		Motors & \\
+		Ultrasound Sensor & \\
+		Calibration & \\
+		Building techniques & \\
+        Crawl Robot & \\
+	     & \\
+	     & \\
+	     & \\
+     
+		      
+	\end{tabular}
+	\caption{Sections of the report written by each of the students}
+	\label{tab:contributions}
+\end{table}
 
 
 \bibliographystyle{abbrv}
