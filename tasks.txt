@@ -1,0 +1,13 @@
+introduction
+add citations / etc 
+martin's feedback
+( martin's feedback #2 ) 
+figure text
+accuracy/calibration and built in functions as different sections 
+
+write swing problem section
+write swing robot section
+write gyro section
+-----
+start building setup for leg movement
+start building setup CMA-ES
