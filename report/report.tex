@@ -86,17 +86,23 @@ While the brick, after flashed with the ev3dev image, runs a Debian Linux system
 To circumvent these problems, a setup of the main program running on a computer and interacting with the brick to move motors or read sensor data has been employed by multiple community projects, such as a rubics cube solver \cite{ev3_rubics}. We follow the design approach pioneered by these projects. The brick runs a remote procedure call server, implemented by the python3 library \texttt{rpyc}. This allows a host computer to connect to the brick and remotely interact with motors and sensors. All program logic is executed on the computer, the brick is listening to commands. Next to the performance improvements, another benefit is that the program can be executed in a jupyter notebook on the computer, which allows to better integrate documentation and visualization into the development process.
 
 \section{Sensors and Motors}
-In this section we examine the peripheral devices of the EV3 platform. We examine the behaviour of motors and sensors, design experiments to measure accuracy and time delays. We discuss the need for calibration and give general advice on building solid and functional robots.
+In this section we examine the peripheral devices of the EV3 platform. We examine the behaviour of motors and sensors, design experiments to measure accuracy and time delays. We conclude this section by discussing the need for calibration of some sensors.
 \subsection{Time Delays}
 
 We tested the response speed of the motors, buttons and the colour sensor, the code for which can be found commented in experiments/Response speed experiment.ipynb. \\
 For the button, a single button was connected, and we measured the time until the robot noticed that the button wasn't pressed, and repeated, this setup was very simple and was repeated 1000 times taking 19 seconds. Mean button response was $0,019$ seconds with a very low variance at $4,8\cdot 10^{-6}$. \\
 Motor reaction speed was tested with a slightly more complicated setup, in which a large motor had an arm attached, that had to move to hit a button. The arm was positioned right in front of the button, such that any amount of movement would set off the button, and it would reset position after each round. A gif of this setup can be found in the jupyter notebook. Motor response testing was repeated 1000 times, and took 85 seconds. Since the time involved a button delay, a value without this was calculated by substracting the button delay mean. The mean of the new motor-only delay was $0,066$ and the motor had much higher variance than the button at $3,6\cdot 10^{-4}$ and a $95\%$ percentile of $0,124$. This is also clearly visible in the below plot. \\
-\includegraphics[scale=0.9]{motor_button_response_histogram.png} \\
+\includegraphics[scale=0.7]{images/motor_button_response_histogram.png} \\
 From this it appears that motor response is not only slower, but also a bit more unstable than the button response. Note though, that more factors, such as speed and real-world interference could have affected the motor response speed experiment. Still, even if assuming the 95\% percentile, we should be able to get at least 8 actions per second.\\
 The colour sensor turned out to react slower than the button, probably due to the fact that it has to cycle between different LEDs. An experiment was made in which a colour sensor made an RGB observation and this time was logged. It was compared to an experiment in which it observed both RGB, reflected light and ambient light. Both were run 10.000 times, taking 10 and 38 minutes respectively. \\
-\includegraphics[scale=0.9]{colour_response_histogram.png} \\
+\includegraphics[scale=0.7]{images/colour_response_histogram.png} \\
 With only RGB, we observed a mean response time of $0,062$ seconds, which is very comparable to the motor response time, but with a lower variance at $1,1\cdot 10^{-4}$. With everything, the mean response was $0,228$ seconds and a variance of $3,8 \cdot 10^{-4}$. It might be possible to reduce the delay by storing information on the brick such that the transfer between brick and computer only happens once, but since the sensor uses different lights for each observation, time would still be significantly longer than RGB only.
+
+
+\subsection{MOVE: The Colour Sensor}
+Calling values from the sensor will cause it to shine one of or all three different colours of light and measure values of the reflections. The sensor can measure colours, ambient light and reflected light, but since these are three different modes, calling all of them incurs triple sensor delay, which may be too slow for real-time use. The colour sensor has a built-in list of possible colours, and can measure and predict white, blue, black, green, red, yellow, brown and no colour. Since the sensor measures reflection, pointing it into the air will measure (close to) (0,0,0) which it categorizes as no colour.
+
+
 \subsection{Motors}
 The LEGO product line includes a variety of 9V DC electrical motors, which can be used to power a wide range of LEGO models, such as cars, trains and robots. The current product offering consists of two main families: ``Power Functions'' motors and ``EV3'' motors. The most common sizes of these product lines are shown in figure \ref{fig:motors}.
 
@@ -106,9 +112,6 @@ The LEGO product line includes a variety of 9V DC electrical motors, which can b
 \caption{Overview of current (2018) LEGO motors. Upper row: Power Functions large and X-large motor. Bottom row: EV3 medium and large motor. Images from \cite{motor_comparison}.}
 \label{fig:motors}
 \end{figure}
-
-\subsection{MOVE: The Colour Sensor}
-Calling values from the sensor will cause it to shine one of or all three different colours of light and measure values of the reflections. The sensor can measure colours, ambient light and reflected light, but since these are three different modes, calling all of them incurs triple sensor delay, which may be too slow for real-time use. The colour sensor has a built-in list of possible colours, and can measure and predict white, blue, black, green, red, yellow, brown and no colour. Since the sensor measures reflection, pointing it into the air will measure (close to) (0,0,0) which it categorizes as no colour.
 
 \subsubsection*{Power Functions Motors}
 The ``Power Functions'' line of motors is designed to work with a battery pack and is intended to be controlled either with a physical switch on the battery pack or a remote control. Adapters for the power cables are required to use them in combination with the EV3 platform. \cite{power_fun}
@@ -186,7 +189,14 @@ While working with the sensor on the crawling robot, we noticed the importance o
 	\label{fig:ultrasonic}
 \end{figure}
 
+\subsection{Calibration} \label{calibration}
+Servo motors and gyroscope sensors are initialized when the brick is restarted. All other sensors require no calibration.
 
+On system start, the position of the motor is initialized as 0 degrees. If the robot is dependent on absolute positional values, it is important to calibrate the 0-point. This can either be done by moving the motor forcefully into the correct position before starting the brick, or using more elaborate constructions of moving the motor against a button, until the button is pressed. This gives certainty over the 0-position of the motor and can be used to calibrate the rotation.
+
+The gyroscope initializes its orientation at system start as 0 degrees. Further, it assumes to be not in motion during system start. All acceleration measurements are in relation to this value taken during system start. Since the rotational angle returned by the gyroscope is calculated as the integral over acceleration measurements, even a slight inaccuracy in acceleration will accumulate to a significant drift in angle over time. This drift has to be monitored and adjusted for. This can be done either programmatic, or by restarting the system to re-calibrate the sensor.
+
+\pagebreak
 \section{Colour Detection}
 \subsection{Problem}
 The colour sensor was chosen as an option for easy-entry into simple machine learning. We wanted to be able to visualize how machine learning updated after data was added and what the basis for decisions were, using a simple and easy to understand setup.
@@ -194,21 +204,21 @@ The colour sensor was chosen as an option for easy-entry into simple machine lea
 The robot was made to be easy to use and consistent to allow similar observations from the colour sensor at different times. \\
 A cage was made for the sensor, that easily plugged into the robot, and which could provide readings from everything placed on top of it, allowing for regular distances to the observed object at one regular lego technic block. Two buttons where added to the side of the robot for controls. \\
 The final design is simple and modular, allowing it to be easily disassembled into smaller parts and reassembled later. \\
-\includegraphics[scale=0.1,angle=90]{colour_robot_full.jpg} \\
+\includegraphics[scale=0.1,angle=90]{images/colour_robot_full.jpg} \\
 something about figure number and description? \\
 Since the robot has no moving parts, the results should be replicateable as along as the robot is built with 2 buttons and a color sensor, and the matter is kept still at a distance of one block.
 \subsection{The Learning}
 Since we wanted to visualize how learning worked, we implemented KNN, as one of the simplest and most intuitive machine learning algorithms. For the data input we used only the RGB output from the color sensor, as we wanted to plot in real time. For visualization, we used a 3d-plot of the observed colors, with the axes being red, green and blue values. \\
 We made two versions of KNN with the color sensor, found commented in simple\_learning/KNN colors.ipynb \\
 The first version is slightly silly, but colorful. Our dataset is started with either a base set (simple RGB values) or a few observations, in which we use the color sensor's built in prediction. Real-time KNN is then run, and we output our prediction as well as a 3d plot of our current observation (black triangle), together with all previous observations (coloured dots). Additional dots can be added by pressing a button, which adds the current observation and prediction as a true point in the data. This produces colorful plots, like the below plot. \\
-\includegraphics[scale=1]{ColourKNNversion1.png} \\
+\includegraphics[scale=1]{images/ColourKNNversion1.png} \\
 something about figure number and description? \\
 Since the above version uses starting data and the built-in predictions from lego, we also tried a different setup. Instead of prediction colours directly, we predict colour groups, which we will call group "red" and group "green". In this setup, the robot again predicts and plots in real time, but we now start with zero data, and rely only on the buttons. One button adds the prediction to the data set with label "red" and the other "green". This allows us to not rely on anything from lego, and allows us to make different splits, such as light versus dark colours, which could learn to differentiate light and dark blue. The plots are similar to before, but with fewer colours.\\
-\includegraphics[scale=1]{ColourKNNversion2.png} \\
+\includegraphics[scale=1]{images/ColourKNNversion2.png} \\
 something about figure number and description? \\
 We also tried implementing a more complicated system to work with other visualizations. We implemented a neural network, and wanted to visualize how learning and training works in this setup. The code for this is commented in reinforcement\_colors/reinforced\_colors.ipynb. \\
 In this case, the robot has a list of allowed colors, starts with no data, and predicts from an untrained network. It reads RGB colours, but also reflected light and ambient light, since we are not running real-time. It displays scores for each color, and reads the highest scoring color aloud. A button press indicates whether this was correct or wrong, and it trains based on this feedback. This allows the user to view updates in predictions from step to step. The predictions are output on a list like this \\
-\includegraphics[scale=1]{NNcolours.PNG} \\
+\includegraphics[scale=1]{images/NNcolours.png} \\
 which updates with every new prediction.
 \subsection{Results}
 Two versions of a robot that uses KNN were implemented and built with visualization in mind. Both versions are functional, and can be used to explain and link how data affects predictions in machine learning.  \\
@@ -219,38 +229,6 @@ We encountered a number of difficulties related to these experiments, but have a
 For visualization, we originally wanted to show the decision boundary for our learning system, to show how it changes with time. Unfortunately, we found no good way to visualize this in 3d, so instead we looked into dimensionality reduction. We tried reducing dimensionality using PCA, and plot a decision boundary in the resulting 2d space, but this proved problematic, both in our setup and generally. Since we wanted to run real-time we had issues running the PCA on the decision boundary. To get enough points for a proper boundary in 3d space we had to use at least 1 million points, which took way too long to process to be able to run real-time. If instead we didn't run real-time, we could plot the PCA values and a decision boundary in this space, but the values would be mostly meaningless. In the 3d space it at least somewhat makes sense, you have an intuition about what changes if we increase on the "red" axis and so on. In the PCA space we're left with principal components instead, and the points from previous observations would not even be stationary. \\
 Some ways to get around this issue would be to only read two colour channels (removing the need to reduce dimensionality), or find another experiment which only takes two inputs. \\
 The neural network setup was made to demonstrate that the colour sensor setup can be extended to more complicated machine learning systems, to show some width of the space of possible education. It was implemented, but as a very simple form. It takes a number of colours initially, and predicts between these, but for more than 2 colours (or colour groups) this makes training complicated. The model was implemented such that if it predicted the first colour on our list, and we respond correct, it trains with (1,0,0,0) (or similar for more colours) while instead if we respond wrong, it trains (0,1,1,1) (so it improves every other colour). This setup is not optimal, and is simply a POC. If instead we want to focus on this task to improve it, it may be able to use methods from reinforcement or online learning, since we're dealing with a reduced feedback (right/wrong) setup (this was an idea from the start, as is obvious from the file name). The reason this wasn't implemented was a time constraint built into the setup. At the moment, prediction is done by pressing both buttons, which causes the prediction list to update, and the robot to say the highest scoring colour. At this point you can press a button for yes or no. Unfortunately, you need a lot of observations to properly train the network, which makes it very time consuming and not very education-friendly. We ran a test with 150 entries, observing only 3 different colours. After this, it could still not differentiate the 3 colours. We believe that implementing a proper reinforcement or bandit setup would greatly improve the training, but 150 observations or just 50 that all have to be done manually is still a significant barrier for the neural network setup. Other options could be to pre-load it with some amount of data, but this would remove the chance to see early learning. The output for the neural network model could of course be combined with a plot like the 3d we made for the KNN model, or a PCA/decision boundary or similar, with most of the same yields and issues as discussed before. We believe the neural network setup has potential, but has some hurdles to overcome before it can be useful in an educational setting.
-\subsection{Calibration} \label{calibration}
-Servo motors and gyroscope sensors are initialized when the brick is restarted. All other sensors require no calibration.
-
-On system start, the position of the motor is initialized as 0 degrees. If the robot is dependent on absolute positional values, it is important to calibrate the 0-point. This can either be done by moving the motor forcefully into the correct position before starting the brick, or using more elaborate constructions of moving the motor against a button, until the button is pressed. This gives certainty over the 0-position of the motor and can be used to calibrate the rotation.
-
-The gyroscope initializes its orientation at system start as 0 degrees. Further, it assumes to be not in motion during system start. All acceleration measurements are in relation to this value taken during system start. Since the rotational angle returned by the gyroscope is calculated as the integral over acceleration measurements, even a slight inaccuracy in acceleration will accumulate to a significant drift in angle over time. This drift has to be monitored and adjusted for. This can be done either programmatic, or by restarting the system to re-calibrate the sensor.
-
-
-\subsection{Building Techniques}
-During the building process, multiple key takeaways for building with LEGO were:
-\begin{itemize}
-	\item To improve reproducibility of experiments, the LEGO builds should be as solid as possible. Big, complicated constructions tend to flex and bend. Small, simple and solid designs are most easy to work with.
-	\item Avoid using gears and other moving parts as much as possible. These introduce additional complexity, points of failure and tend to make the build less rigid.
-	\item Account for plenty of space for cables. Motors and sensors need to be connected to the brick with stiff cables. Additionally, leave space for the charging cable and a USB connection to a computer.
-\end{itemize}
-
-
-\section{Reinforcement Learning with LEGO Mindstorms}
-general issues arising when working with actual robots vs simulation
-
-\section{Colour Detection}
-Asger
-\subsection{Problem}
-what task solved
-\subsection{The Robot}
-description of the robot build
-\subsection{The Learning}
-implementation of learning, choices made in picking and implementing algorithm
-\subsection{Results}
-final results
-\subsection{Discussion}
-includes issues / future work
 
 \pagebreak
 \section{Crawl-Robot}
@@ -406,12 +384,10 @@ Table \ref{tab:contributions} shows the individual contributions to the report b
 	\centering
 	\begin{tabular}{l|l}
 		Steffen & Asger \\ \hline
-		Introduction &       \\
-		Development Setup & \\
-		Motors & \\
-		Ultrasound Sensor & \\
-		Calibration & \\
-		Building techniques & \\
+		Development Setup & Introductions\\
+		Motor Accuracy & Time delays\\
+		Ultrasound Sensor & Colour Sensor\\
+		Calibration & Colour Detection\\
         Crawl Robot & \\
 	     & \\
 	     & \\
