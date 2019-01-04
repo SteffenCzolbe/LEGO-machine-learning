@@ -6,6 +6,7 @@
 \usepackage{subcaption}
 \usepackage[linesnumbered,ruled]{algorithm2e}
 \usepackage{algpseudocode}
+\usepackage{gensymb}
 
 % Math stuff
 \usepackage{amsmath,amssymb,mathtools,bm,etoolbox,stmaryrd}
@@ -51,7 +52,13 @@
 \section{Introduction}
 scientific goal,
 educational goals,
-agenda by lego
+why machine learning for school,
+why LEGO,
+agenda by lego,
+why reinforcement learning,
+brief intro to machine learning,
+outline of the report,
+reference to github
 
 \subsection{EV3 robot}
 The EV3 system is the third version of the LEGO Mindstorm family of robot toys. It contains a central processing component, called ''Brick``, to which motors, sensors and other peripheral devices can be attached. All these components are embedded into plastic casings, which make them compatible with other LEGO parts. The LEGO Group markets the EV3 system to educational facilities and private persons in a package with build instructions and parts for multiple robots. The current product offering consists of 2 different packages to build a total of 9 robots, including the self-balancing two wheeled ``Gyroboy'' and a sorting machine that orders LEGO bricks based on their colour. The playful development of further robots by end users is encouraged. A large community of engaged hobby robot builders has formed around the EV3 platform.
@@ -78,7 +85,7 @@ While the default software is well supported by the editor and operating system 
 In this section we present the development set up chosen for this project. It consists of the open source operating system ev3dev to power the brick, the ev3dev python library to control motors and sensors, and remote procedure calls to communicate with the robot from a host computer the via jupyter notebook.
 
 \subsection{Ev3dev Platform}
-Ev3dev is a Debian Linux-based operating system that runs on several LEGO Mindstorms compatible platforms including the LEGO Mindstorms EV3 and Raspberry Pi-powered BrickPi. It is maintained by a community of enthusiasts and offers libraries to interact with LEGO Mindstorms motors and sensors in many programming languages, such as Java, Ruby and Python \cite{ev3dev}. The Linux disk image can be downloaded at \href{https://www.ev3dev.org/}{www.ev3dev.org} and flashed on a SD card. Once the SD card is inserted into the LEGO Mindstorms brick, the brick will boot into the ev3dev operating system. A set up guide with detailed explanations on installation and guides on how to get started with development are available at the ev3 website.
+Ev3dev is a Debian Linux-based operating system that runs on several LEGO Mindstorms compatible platforms including the LEGO Mindstorms EV3 and Raspberry Pi-powered BrickPi. It is maintained by a community of enthusiasts and offers libraries to interact with LEGO Mindstorms motors and sensors in many programming languages, such as Java, Ruby and Python \cite{ev3dev}. The Linux disk image can be downloaded at \href{https://www.ev3dev.org/}{www.ev3dev.org} and flashed on a SD card. Once the SD card is inserted into the LEGO Mindstorms brick, the brick will boot into the ev3dev operating system. A set up guide with detailed explanations on installation and guides on how to get started with development are available at the ev3dev website.
 
 \subsection{Control by external Computer}
 While the brick, after flashed with the ev3dev image, runs a Debian Linux system that can execute general purpose programs, the processing and memory constraints imposed by the hardware limit the complexity of programs executed on the brick severely. Installing a python package takes 2 minutes. Executing more computationally expensive tasks like deep learning or real time video processing on the brick is not feasible.
@@ -104,7 +111,7 @@ Calling values from the sensor will cause it to shine one of or all three differ
 
 
 \subsection{Motors}
-The LEGO product line includes a variety of 9V DC electrical motors, which can be used to power a wide range of LEGO models, such as cars, trains and robots. The current product offering consists of two main families: ``Power Functions'' motors and ``EV3'' motors. The most common sizes of these product lines are shown in figure \ref{fig:motors}.
+The LEGO product line includes a variety of 9V DC electrical motors, which can be used to power a wide range of LEGO models, such as cars, trains and robots. The current product offering consists of two main families: ``Power Functions'' motors and ``EV3'' servo motors. The most common sizes of these product lines are shown in figure \ref{fig:motors}.
 
 \begin{figure}
 \centering
@@ -116,13 +123,13 @@ The LEGO product line includes a variety of 9V DC electrical motors, which can b
 \subsubsection*{Power Functions Motors}
 The ``Power Functions'' line of motors is designed to work with a battery pack and is intended to be controlled either with a physical switch on the battery pack or a remote control. Adapters for the power cables are required to use them in combination with the EV3 platform. \cite{power_fun}
 
-By changing the current and polarity of the DC power supply, these motors can spin in both directions and different speeds. Because `Power Functions'' motors do not measure rotation or angle, robots utilizing them often require other means of measuring mechanical movements. Compared to the EV3 motors, they offer similar torque and mechanical power, have faster reaction speeds but offer no feedback. \cite{motor_comparison}
+By changing the current and polarity of the DC power supply, these motors can spin in both directions and different speeds. Because `Power Functions'' motors do not measure rotation or angle, robots utilizing them often require other means of measuring mechanical movements. Compared to the EV3 servo motors, they offer similar torque and mechanical power, have faster reaction speeds but offer no feedback. \cite{motor_comparison}
 
 
 \subsubsection*{EV3 Servo Motors}
 The EV3 robot kit contains a medium and two large servo motors. The EV3 motors use tacho feedback to measure their alignment and rotation, which allows for more precise control compared to ``Power Functions'' motors. \cite{Servo_Motor}. In strength and speed they are comparable to their ``Power Functions'' counterparts. The large EV3 motor is roughly twice as powerful as the medium one, and comes in a bigger case with different mounting points. Detailed comparisons of the mechanical and electrical properties of all LEGO motors is available at \cite{motor_comparison}.
 
-The ev3dev programming environment offers functions for low level interactions with the EV3 motors. Available are methods to start and stop the motor, reading the angle, setting the speed and 3 different stopping patterns (coast, brake and hold). The medium and large EV3 Motor offer identical programming interfaces. For angle measurements, the motor saves the rotation at system start as 0 degrees. During operation, the current rotation angle offset to the starting point can be read by the motor. \cite{ev3_python}
+The ev3dev programming environment offers functions for low level interactions with the EV3 motors. Available are methods to start and stop the motor, reading the angle, setting the speed and three different stopping patterns (coast, brake and hold). The medium and large EV3 Motor offer identical programming interfaces. For angle measurements, the motor saves the rotation at system start as 0 degrees. During operation, the current rotation angle offset to the starting point can be read by the motor. \cite{ev3_python}
 
 \subsection*{Motor Accuracy}
 Reinforcement learning algorithms rely on repetition of the same motions many times. To assume a non-adversarial environment and ensure reproducible results, actions taken by the motors need to be accurate and consistent. We design an experiment to measure the accuracy of the motors after a series of repeated actions.
@@ -139,22 +146,22 @@ The experiment consists of an arm attached to a motor. We rotate the arm in a 90
 
 
 
-The ev3dev python bindings offer two different movement patterns: \texttt{'on\_for\_degrees()'}, which rotates the motor relative to the current position, and \texttt{'move\_to\_pos()'}, which rotates the motors to an absolute value.  Further, three stopping patterns exists: \texttt{'brake'}, \texttt{'hold'} and \texttt{'coast'}. In the experiment we will test different combinations of movement and holding patterns, to determine the configuration with the highest amount of accuracy and reproducibility. Since we want high accuracy, we do not test the coasting setting. 
+The ev3dev python bindings offer two different movement patterns: \texttt{'on\_for\_degrees()'}, which rotates the motor relative to the current position, and \texttt{'move\_to\_pos()'}, which rotates the motors to an absolute value.  Further, three stopping patterns exists: \texttt{'brake'}, \texttt{'hold'} and \texttt{'coast'}. In the experiment we will test different combinations of movement and holding patterns, to determine the configuration with the highest amount of accuracy and reproducibility. Since we want high accuracy, we do not test the \texttt{'coast'} setting. The coasting option allows the motors to 'coast' until standstill, instead of enforcing them to stop at a specific position. 
 
 
 \begin{table}[H]
 	\centering
 	\begin{tabular}{|l|l|l|l|l|l|l|}
 		\hline
-		Move Pattern & Stop Pattern & Weight & offset after 25 iterations & after 50it & after 75it             & after 100it            \\ \hline \hline
-		relational   & hold         & no     & 1             & 1    & 2                & 2                \\ \hline
-		relational   & hold         & yes    & 9             & 11   & 35               & 45               \\ \hline
-		relational   & brake        & no     & 1             & 1    & 1                & 2                \\ \hline
-		relational   & brake        & yes    & 35            & 50   & \textgreater{}50 & \textgreater{}50 \\ \hline
-		absolute     & hold         & no     & 0             & 1    & 2                & 1                \\ \hline
-		absolute     & hold         & yes    & 2             & 1    & 4                & 3                \\ \hline
-		absolute     & brake        & no     & 1             & 2    & 2                & 3                \\ \hline
-		absolute     & brake        & yes    & 4             & 6    & 5                & 4                \\ \hline
+		Move Pattern & Stop Pattern & Weight & inaccuracy after 25 iterations & after 50it & after 75it             & after 100it            \\ \hline \hline
+		relative   & hold         & no     & 1\degree             & 1\degree    & 2\degree                & 2\degree                \\ \hline
+		relative   & hold         & yes    & 9\degree             & 11\degree   & 35\degree               & 45\degree               \\ \hline
+		relative   & brake        & no     & 1\degree             & 1\degree    & 1\degree                & 2\degree                \\ \hline
+		relative   & brake        & yes    & 35\degree            & 50\degree   & \textgreater{}50\degree & \textgreater{}50\degree \\ \hline
+		absolute     & hold         & no     & 0\degree             & 1\degree    & 2\degree                & 1\degree                \\ \hline
+		absolute     & hold         & yes    & 2\degree             & 1\degree    & 4\degree                & 3\degree                \\ \hline
+		absolute     & brake        & no     & 1\degree             & 2\degree    & 2\degree                & 3\degree                \\ \hline
+		absolute     & brake        & yes    & 4\degree             & 6\degree    & 5\degree                & 4\degree                \\ \hline
 	\end{tabular}
 	\caption{Experimental result. Angle offset in degrees after 25, 50, 75 and 100 iterations for different configurations.}
 	\label{tab:angle_experiment}
@@ -238,15 +245,15 @@ The neural network setup was made to demonstrate that the colour sensor setup ca
 	\caption{Crawl Robot, frontal view.}
 	\label{fig:crawl_robot}
 \end{figure}
-We seek to demonstrate reinforcement learning on a simple robot. While many robot designs and learning goals are possible, we selected a crawling robot as a suitable object for demonstration. The concept of a robot using one arm to crawl, or drag itself along a linear track has been explored by multiple other studies \cite{youtube_crawl2} \cite{youtube_crawl}. We selected this task first, as it is a comparatively simple design and we know the problem can be solved. Realizing this robot will equip us with the experience and knowledge to solve more complex problems in the future.
+To demonstrate reinforcement learning in educational settings, we seek to have a physical model for demonstration. The training process should be robust, as to deliver a reliable demonstration in teaching scenarios outside of laboratories, and fast, to keep the attention of an audience. While many robot designs and learning goals, like pole balancing or swinging, are possible, we selected a crawling robot as a suitable object for demonstration. The concept of a robot using one arm to crawl, or drag itself along a linear track has been explored by multiple other studies \cite{youtube_crawl2} \cite{youtube_crawl}. We selected this task, as it is a comparatively simple design, with few moving parts. The system is more robust towards external force from curious bystanders than for example a loosely swinging pole. By Defining a limited state space we can simplify the problem and get a training time suitable for demonstration. Realizing this robot will provide us with a model for demonstration  and equip us with the experience and knowledge to solve more complex problems in the future.
 
 
 \subsection{Robot Design}
-To facilitate the crawling motion, the robot needs a movable arm to pull itself forward. The arm consist of two elements: the base arm, which is attached to the robot, and a pivot arm attached to the base arm. Both arm joints rotate around the same axis, allowing the hand at the far end of the pivot to move on a plane. To allow the arm to pull the robot, the ground friction of the arm has to be maximized, and the ground friction of the robot minimized. This is achieved by a big rubber tyre firmly attached (not spinning) to the robots hand. The robot body sits on wheels which can spin freely. See figure \ref{fig:crawl_robot} for a photo of the robot arm, hand and wheel basis.
+To facilitate the crawling motion, the robot needs a movable arm to pull itself forward. The arm consist of two elements: the base arm, which is attached to the robot, and a pivot arm attached to the base arm. Both arm joints rotate around the same axis, allowing the hand at the far end of the pivot to move on a plane. To allow the arm to pull the robot, the ground friction of the arm has to be maximized, and the ground friction of the robot minimized. This is achieved by a big rubber tyre firmly attached (not spinning) to the robots hand. The robot body sits on wheels which can spin freely. See Figure \ref{fig:crawl_robot} for a photo of the robot arm, hand and wheel basis.
 
 To measure distance travelled, the ultrasonic sensor is used. This sensor is attached to the back of the robot and records the distance to a target from the rear end of the robot. As the wheel basis of the robot might tilt when the arm is pressing into the ground, while the ultrasonic sensor requires a stable angle towards the target for consistent measurements, the sensor is mounted on a sled which is pulled behind the robot. The sled is visible in figure \ref{fig:sub2}.
 
-To calibrate the motors of the arm, two buttons are attached to the top of the robot. During the start up process, the arm is moved all the way back, until base arm and pivot arm hit their respective buttons. This motion is depicted in figure \ref{fig:sub1}. The certainty about the arm position attained by this action is used to initialize the 0-angle of both motors.
+To calibrate the motors of the arm, two buttons are attached to the top of the robot. During the start up process, the arm is moved all the way back, until base arm and pivot arm hit their respective buttons. This motion is depicted in Figure \ref{fig:sub1}. The certainty about the arm position attained by this action is used to initialize the 0-angle of both motors.
 
 \begin{figure}
 	\centering
@@ -268,7 +275,7 @@ To calibrate the motors of the arm, two buttons are attached to the top of the r
 \end{figure}
 
 \subsection{Formulation of the Learning Problem}
-To train the robot how to crawl, we use Q-learning. O-learning is a form of reinforcement learning. It provides agents with the capability of learning to act optimally in Markovian domains by experiencing the consequences of actions. To learn, an agent tries an action at a particular state, and evaluates its consequences in terms of the immediate reward or penalty it receives and its estimate of the value of the state to which it is taken. By trying all actions $A$ in all states $S$ repeatedly, it learns which are best overall, judged by long-term discounted reward \cite{Watkins1992}.
+To train the robot how to crawl, we use Q-learning. Q-learning is a form of reinforcement learning. It provides agents with the capability of learning to act optimally in Markovian domains by experiencing the consequences of actions. To learn, an agent tries an action at a particular state, and evaluates its consequences in terms of the immediate reward or penalty it receives and its estimate of the value of the state to which it is taken. By trying all actions $A$ in all states $S$ repeatedly, it models the value $Q(s,a)$ of each action state pair. The algorithm learns which state-actions pairs are the best overall, judged by long-term discounted reward \cite{Watkins1992}.
 
 \begin{figure}
 	\centering
@@ -276,15 +283,19 @@ To train the robot how to crawl, we use Q-learning. O-learning is a form of rein
 	\caption{Arm positions (states) of the crawl robot. From top to bottom: Pivot arm in positions far, mid, close. From left to right: Base arm in positions up, mid, down. The tilt of the robot base in the right column is caused by the arm pressing into the floor.}
 	\label{fig:crawl_states}
 \end{figure}
+\medskip
+The Q-learning algorithm fits the domain of the crawl robot. The implementation chosen is shown in Algorithm \ref{alg:q-learn} and follows \cite{sutton1998introduction}. Training is grouped into epochs, and each epoch consists of multiple steps (loops in line 2 and 4 of the algorithm). In each step, we take one action. This action is determined with the $\epsilon$-greedy strategy (lines 5-10), where with probability $\epsilon$ we perform a random action, and with probability $1-\epsilon$ we greedily select the action $a$ with the highest current value. In line 11 we perform the sampled action $a$, observe the reward $r$ and transition into the next state $s'$. In line 12 the state value function $Q(s,a)$ is updated. We end the step by setting $s \leftarrow s'$ and then repeating (line 13, 14). Each epoch starts with start state $s_0$. To execute the learned policy, we set $\epsilon$ to $0$ and no longer update the state value function.
+\medskip
 
-The Q-learning algorithm fits the domain of the crawl robot. The implementation chosen is shown in Algorithm \ref{alg:q-learn} and follows \cite{sutton1998introduction}. We model an action as moving the arm. The immediate reward or penalty received is proportional to the distance traveled by performing the action, as measured by the ultrasonic sensor. As learning speed is of importance, we define a discrete state space with 9 states. These states are displayed in figure \ref{fig:crawl_states}. We could have sub divided the arm movement plane into more states, but learning is expected to take longer as more states have to be explored by the learning algorithm. More formally, the choices for the action-space $A$ and state space $S$ are:
+To apply Q-learning to the crawl robot domain, we model an action as moving the arm. The immediate reward or penalty received is proportional to the distance traveled by performing the action, as measured by the ultrasonic sensor. As learning speed is of importance, we define a discrete state space with 9 states. These states are displayed in figure \ref{fig:crawl_states}. By selectiong the state space to be small, the learning algorithm has to explore only few states, which speeds uo learning. We could have sub divided the arm movement plane into more states, with the drawback of longer learning time. More formally, the choices for the action-space $A$ and state space $S$ are:
 \begin{align*}
 	A = \{ &\text{ move base arm up}, \text{ move base arm down} , \text{ move pivot arm far}, \text{ move pivot arm closer}\} \\
 	S = \{ &\text{base up pivot far}, \text{ base mid pivot far}, \text{ base down pivot far}, \\
 	       &\text{base up pivot mid}, \text{ base mid pivot mid}, \text{ base down pivot mid},\\
 	       &\text{base up pivot down}, \text{ base mid pivot down}, \text{ base down pivot down},\} \\
 \end{align*}
-The intial state for each epoch is given by $s_0 = \text{base up pivot far}$, which is the furthest extension of the arm. We select learning rate $\alpha = 0.5$, discount rate $\gamma = 0.8$. The exploration factor $\epsilon$ is initially set to $0.5$ and declines exponentially throughout training. We train for a maximum of $100$ epochs with $35$ steps per epoch.
+The initial state for each epoch is given by $s_0 = \text{base up pivot far}$, which is the furthest extension of the arm. For fast learning, we got good results with a learning rate $\alpha = 0.5$, discount rate $\gamma = 0.8$. The exploration factor $\epsilon$ is initially set to $0.5$ and declines exponentially throughout training, allowing lots of exploration at the start of training, while gradually reducing exploration for later epochs. We chose $35$ steps per epoch, as this amount allows each epoch to explore all states multiple times. Training is stopped once the motion appears to be executed with little error.
+
 \begin{algorithm}[]
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
@@ -327,7 +338,7 @@ The robot is not fully autonomous during training. It requires human interventio
 	\item In rare cases, the motors of the arm have slightly too little torque to push against resistance caused by the hand hitting the floor. The motors become stuck. In these cases the robot needs to be slightly pushed to overcome the resistance and release the motors.
 \end{itemize}
 
-A recording of the full training and a presentation of the learned motion is accessible as a video online at \href{https://youtu.be/NUTv-oNWEYo}{youtu.be/NUTv-oNWEYo}. The video shown the training process at 7 times normal speed. Manual interaction is shown as well.
+A recording of the full training and a presentation of the learned motion is accessible as a video online at \cite{youtube_crawl_training}. The video shown the training process at 7 times normal speed. Manual interaction is shown as well.
 
 \begin{figure}
 	\centering
