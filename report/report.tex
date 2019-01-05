@@ -60,10 +60,12 @@ brief intro to machine learning,
 outline of the report,
 reference to github
 
-\subsection{EV3 robot}
-The EV3 system is the third version of the LEGO Mindstorm family of robot toys. It contains a central processing component, called ''Brick``, to which motors, sensors and other peripheral devices can be attached. All these components are embedded into plastic casings, which make them compatible with other LEGO parts. The LEGO Group markets the EV3 system to educational facilities and private persons in a package with build instructions and parts for multiple robots. The current product offering consists of 2 different packages to build a total of 9 robots, including the self-balancing two wheeled ``Gyroboy'' and a sorting machine that orders LEGO bricks based on their colour. The playful development of further robots by end users is encouraged. A large community of engaged hobby robot builders has formed around the EV3 platform.
+\section{EV3 System}
+The EV3 system is the third version of the LEGO Mindstorm family of robot toys. It contains a central processing component, called ''Brick``, to which motors, sensors and other peripheral devices can be attached. All components are embedded into plastic casings, which make them compatible with other LEGO parts. The LEGO Group markets the EV3 system to educational facilities and private persons in a package with build instructions and parts for multiple robots. The current product offering consists of 2 different packages to build a total of 9 robots, including the self-balancing two wheeled ``Gyroboy'' and a sorting machine that orders LEGO bricks based on their colour. The playful development of further robots by end users is encouraged. A large community of engaged hobby robot builders has formed around the EV3 platform.
 
-\subsubsection*{Hardware}
+This section examines the components, motors, sensors and software of the EV3 ecosystem. We combine these components later on to build our own robots.
+
+\subsection{Central component: The Brick}
 The Brick is the central processing component of each EV3 robot. It can be controlled via multiple buttons, features a small LCD screen and can be connected to a computer via Wifi, Bluetooth or USB. For peripherals, up to 4 motors and 4 Sensors can be connected. The specifications of the embedded system are \cite{ev3_dev_toolkit}:
 \begin{listing}
 	CPU: 32bit, 300MHz ARM9 Processor \\
@@ -73,8 +75,56 @@ The Brick is the central processing component of each EV3 robot. It can be contr
 	Peripherals: 4 motors, 4 Sensors
 \end{listing}
 
+\subsection{Motors}
+The LEGO product line includes a variety of 9V DC electrical motors, which can be used to power a wide range of LEGO models, such as cars, trains and robots. The current product offering consists of two main families: ``Power Functions'' motors and ``EV3'' servo motors. The most common sizes of these product lines are shown in figure \ref{fig:motors}.
 
-\subsubsection{Software}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/motors}
+	\caption{Overview of current (2018) LEGO motors. Upper row: Power Functions large and X-large motor. Bottom row: EV3 medium and large motor. Images from \cite{motor_comparison}.}
+	\label{fig:motors}
+\end{figure}
+
+\subsubsection*{Power Functions Motors}
+The ``Power Functions'' line of motors is designed to work with a battery pack and is intended to be controlled either with a physical switch on the battery pack or a remote control. Adapters for the power cables are required to use them in combination with the EV3 platform. \cite{power_fun}
+
+By changing the current and polarity of the DC power supply, these motors can spin in both directions and different speeds. Because `Power Functions'' motors do not measure rotation or angle, robots utilizing them often require other means of measuring mechanical movements. Compared to the EV3 servo motors, they offer similar torque and mechanical power, have faster reaction speeds but offer no feedback. \cite{motor_comparison}
+
+
+\subsubsection*{EV3 Servo Motors}
+The EV3 robot kit contains a medium and two large servo motors. The EV3 motors use tacho feedback to measure their alignment and rotation, which allows for more precise control compared to ``Power Functions'' motors. \cite{Servo_Motor}. In strength and speed they are comparable to their ``Power Functions'' counterparts. The large EV3 motor is roughly twice as powerful as the medium one, and comes in a bigger case with different mounting points. Detailed comparisons of the mechanical and electrical properties of all LEGO motors is available at \cite{motor_comparison}.
+
+The ev3dev programming environment offers functions for low level interactions with the EV3 motors. Available are methods to start and stop the motor, reading the angle, setting the speed and three different stopping patterns (coast, brake and hold). The medium and large EV3 Motor offer identical programming interfaces. For angle measurements, the motor saves the rotation at system start as 0 degrees. During operation, the current rotation angle offset to the starting point can be read by the motor. \cite{ev3_python}
+
+\subsection{Sensors}
+While motors make the robot move, sensors are used to observe the environment and deliver a base for making decisions. In this section we provide an overview over button, colour sensor, ultrasonic sensor and gyroscope.
+
+\subsubsection*{Button}
+One of the simplest sensors of the EV3 system is the button. It is a box-shaped sensor, where one side has a spring loaded retractable surface. This surface is the button. The sensor has two states: pushed and not pushed. Buttons are often used as an event triggers, were a push of the button starts a programmed action.
+
+
+
+
+\subsubsection*{Colour Sensor}
+Calling values from the sensor will cause it to shine one of or all three different colours of light and measure values of the reflections. The sensor can measure colours, ambient light and reflected light, but since these are three different modes, calling all of them incurs triple sensor delay, which may be too slow for real-time use. The colour sensor has a built-in list of possible colours, and can measure and predict white, blue, black, green, red, yellow, brown and no colour. Since the sensor measures reflection, pointing it into the air will measure (close to) (0,0,0) which it categorizes as no colour.
+
+\subsubsection*{Ultrasonic Sensor}
+The EV3 Ultrasonic Sensor generates sound waves and reads their echoes to detect and measure distance from objects. It can also send single sound waves to work as sonar or listen for a sound wave that triggers the start of a program. Distances mesured range from 0-250cm. While the python bindings of this sensor return a distance measurement with an accuracy of up to 1mm \cite{ev3_python}, LEGO advertises an accuracy of  ``up to +/-1cm''. \cite{ultraosnic_sensor}
+
+While working with the sensor on the crawling robot, we noticed the importance of mounting the sensor on a stable frame. It should not tilt vertically or horizontally, as any change in angles also changes the distance to a target. To attain accurate and reliable distance measurements, the target should be a rather large, solid plane, oriented orthogonal to the ultrasonic waves emitted by the sensor. The accuracy is sufficient to measure sub-centimetre movements. Roughly 0.1\% of measurements were faulty and reported the maximum distance value of 255cm. No further experiments to evaluate the accuracy of the ultrasonic sensor have been performed.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.3\linewidth]{images/ultrasonic}
+	\caption{The EV3 ultrasonic sensor. Image from \cite{ultraosnic_sensor}.}
+	\label{fig:ultrasonic}
+\end{figure}
+
+\subsubsection*{Gyroscope}
+The gyroscope sensor is an accelerometer. It measures angular acceleration with a sample rate of 1kHz. By taking the integral of the acceleration, it is able to approximate angles \cite{gyroscope}. Since the gyroscope relies on proper calibration and its angle measurements are  an approximation, they are often highly unreliable. We discuss ways of dealing with this in the calibration and accuracy section.
+
+
+\subsection{Software}
 The LEGO company ships the EV3 platform with a software system centred around its own proprietary graphical programming language based on LabVIEW. The graphical interface enables people with limited programming experience to quickly develop simple programs that can be executed on the Brick. The graphical language is supported by an editor available as a program for Windows and Mac, and as an app for Android and iOS.
 
 While the default software is well supported by the editor and operating system of the brick, more experienced programmers might prefer a more capable language. Multiple community driven software packages exist for this purpose. These support languages such as matlab, python, java, javascript, C++, C, GO, Ruby, Perl, R, Lua, even direct control of the robot via command line is possible \cite{ev3dev}. We discuss a specific development set up in the next section.
@@ -92,8 +142,8 @@ While the brick, after flashed with the ev3dev image, runs a Debian Linux system
 
 To circumvent these problems, a setup of the main program running on a computer and interacting with the brick to move motors or read sensor data has been employed by multiple community projects, such as a rubics cube solver \cite{ev3_rubics}. We follow the design approach pioneered by these projects. The brick runs a remote procedure call server, implemented by the python3 library \texttt{rpyc}. This allows a host computer to connect to the brick and remotely interact with motors and sensors. All program logic is executed on the computer, the brick is listening to commands. Next to the performance improvements, another benefit is that the program can be executed in a jupyter notebook on the computer, which allows to better integrate documentation and visualization into the development process.
 
-\section{Sensors and Motors}
-In this section we examine the peripheral devices of the EV3 platform. We examine the behaviour of motors and sensors, design experiments to measure accuracy and time delays. We conclude this section by discussing the need for calibration of some sensors.
+\section{Accuracy and Calibration}
+To build models that can demonstrate reinforcement learning reliably, we need accurate and reproducible sensor measurements and motor movements. We design experiments to measure the time delay and accuracy of sensors and motors. We empirically determine which ways of controlling the motors yields the most reliable outcomes, and discuss which sensors need to be calibrated before use. 
 \subsection{Time Delays}
 
 We tested the response speed of the motors, buttons and the colour sensor, the code for which can be found commented in experiments/Response speed experiment.ipynb. \\
@@ -106,32 +156,7 @@ The colour sensor turned out to react slower than the button, probably due to th
 With only RGB, we observed a mean response time of $0,062$ seconds, which is very comparable to the motor response time, but with a lower variance at $1,1\cdot 10^{-4}$. With everything, the mean response was $0,228$ seconds and a variance of $3,8 \cdot 10^{-4}$. It might be possible to reduce the delay by storing information on the brick such that the transfer between brick and computer only happens once, but since the sensor uses different lights for each observation, time would still be significantly longer than RGB only.
 
 
-\subsection{MOVE: The Colour Sensor}
-Calling values from the sensor will cause it to shine one of or all three different colours of light and measure values of the reflections. The sensor can measure colours, ambient light and reflected light, but since these are three different modes, calling all of them incurs triple sensor delay, which may be too slow for real-time use. The colour sensor has a built-in list of possible colours, and can measure and predict white, blue, black, green, red, yellow, brown and no colour. Since the sensor measures reflection, pointing it into the air will measure (close to) (0,0,0) which it categorizes as no colour.
-
-
-\subsection{Motors}
-The LEGO product line includes a variety of 9V DC electrical motors, which can be used to power a wide range of LEGO models, such as cars, trains and robots. The current product offering consists of two main families: ``Power Functions'' motors and ``EV3'' servo motors. The most common sizes of these product lines are shown in figure \ref{fig:motors}.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.4\linewidth]{images/motors}
-\caption{Overview of current (2018) LEGO motors. Upper row: Power Functions large and X-large motor. Bottom row: EV3 medium and large motor. Images from \cite{motor_comparison}.}
-\label{fig:motors}
-\end{figure}
-
-\subsubsection*{Power Functions Motors}
-The ``Power Functions'' line of motors is designed to work with a battery pack and is intended to be controlled either with a physical switch on the battery pack or a remote control. Adapters for the power cables are required to use them in combination with the EV3 platform. \cite{power_fun}
-
-By changing the current and polarity of the DC power supply, these motors can spin in both directions and different speeds. Because `Power Functions'' motors do not measure rotation or angle, robots utilizing them often require other means of measuring mechanical movements. Compared to the EV3 servo motors, they offer similar torque and mechanical power, have faster reaction speeds but offer no feedback. \cite{motor_comparison}
-
-
-\subsubsection*{EV3 Servo Motors}
-The EV3 robot kit contains a medium and two large servo motors. The EV3 motors use tacho feedback to measure their alignment and rotation, which allows for more precise control compared to ``Power Functions'' motors. \cite{Servo_Motor}. In strength and speed they are comparable to their ``Power Functions'' counterparts. The large EV3 motor is roughly twice as powerful as the medium one, and comes in a bigger case with different mounting points. Detailed comparisons of the mechanical and electrical properties of all LEGO motors is available at \cite{motor_comparison}.
-
-The ev3dev programming environment offers functions for low level interactions with the EV3 motors. Available are methods to start and stop the motor, reading the angle, setting the speed and three different stopping patterns (coast, brake and hold). The medium and large EV3 Motor offer identical programming interfaces. For angle measurements, the motor saves the rotation at system start as 0 degrees. During operation, the current rotation angle offset to the starting point can be read by the motor. \cite{ev3_python}
-
-\subsection*{Motor Accuracy}
+\subsection{Motor Accuracy}
 Reinforcement learning algorithms rely on repetition of the same motions many times. To assume a non-adversarial environment and ensure reproducible results, actions taken by the motors need to be accurate and consistent. We design an experiment to measure the accuracy of the motors after a series of repeated actions.
 
 \subsubsection*{Experimental Setup}
@@ -183,18 +208,6 @@ In conclusion, to attain the highest level of accuracy and reproducibility, moto
 
 
 \subsection{Gyroscope accuracy}
-
-\subsection{Ultrasonic Sensor}
-The EV3 Ultrasonic Sensor generates sound waves and reads their echoes to detect and measure distance from objects. It can also send single sound waves to work as sonar or listen for a sound wave that triggers the start of a program. Distances mesured range from 0-250cm. While the python bindings of this sensor return a distance measurement with an accuracy of up to 1mm \cite{ev3_python}, LEGO advertises an accuracy of  ``up to +/-1cm''. \cite{ultraosnic_sensor}
-
-While working with the sensor on the crawling robot, we noticed the importance of mounting the sensor on a stable frame. It should not tilt vertically or horizontally, as any change in angles also changes the distance to a target. To attain accurate and reliable distance measurements, the target should be a rather large, solid plane, oriented orthogonal to the ultrasonic waves emitted by the sensor. The accuracy is sufficient to measure sub-centimetre movements. Roughly 0.1\% of measurements were faulty and reported the maximum distance value of 255cm. No further experiments to evaluate the accuracy of the ultrasonic sensor have been performed.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.3\linewidth]{images/ultrasonic}
-	\caption{The EV3 ultrasonic sensor. Image from \cite{ultraosnic_sensor}.}
-	\label{fig:ultrasonic}
-\end{figure}
 
 \subsection{Calibration} \label{calibration}
 Servo motors and gyroscope sensors are initialized when the brick is restarted. All other sensors require no calibration.
