@@ -148,12 +148,23 @@ To build models that can demonstrate reinforcement learning reliably, we need ac
 
 We tested the response time of the motors, buttons and the colour sensor, to get an understanding of how quickly we would be able to react, as well as how reliable this connection was. \footnote{The code for this can be found commented in experiments/Response speed experiment.ipynb.} \\
 For the button, a single button was connected, and we measured the time until the robot noticed that the button wasn't pressed, and repeated, this setup was very simple and was repeated 1000 times taking 19s. Mean button response was $0,019$s with a very low variance at $4,8\cdot 10^{-6}$s$^2$. \\
-Motor reaction speed was tested with a slightly more complicated setup, in which a large motor had an arm attached, that had to move to hit a button. The arm was positioned right in front of the button, such that any amount of movement would set off the button, and it would reset position after each round. A video of this setup can be found in the notebook. Motor response testing was repeated 1000 times, and took 85s. Since the time involved a button delay, a value without this was calculated by substracting the button delay mean. The mean of the new motor-only delay was $0,066$ seconds and the motor had much higher variance than the button at $3,6\cdot 10^{-4}$ seconds$^2$ and a $95\%$ percentile of $0,124$ seconds. This is also clearly visible in the below plot. \\
-\includegraphics[scale=0.7]{images/motor_button_response_histogram.png} \\
+Motor reaction speed was tested with a slightly more complicated setup, in which a large motor had an arm attached, that had to move to hit a button. The arm was positioned right in front of the button, such that any amount of movement would set off the button, and it would reset position after each round. A video of this setup can be found in the notebook. Motor response testing was repeated 1000 times, and took 85s. Since the time involved a button delay, a value without this was calculated by substracting the button delay mean. The mean of the new motor-only delay was $0,066$ seconds and the motor had much higher variance than the button at $3,6\cdot 10^{-4}$ seconds$^2$ and a $95\%$ percentile of $0,124$ seconds. This is also clearly visible in Figure \ref{fig:responsetimemotorbutt}. \\
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.7]{images/motor_button_response_histogram.png}	
+	\caption{Histogram of  response times from buttons and motors.}
+	\label{fig:responsetimemotorbutt}
+\end{figure} 
 From this it appears that motor response is not only slower, but also a bit more unstable than the button response. Note though, that more factors, such as speed and real-world interference could have affected the motor response speed experiment. Still, even if assuming the 95\% percentile, we should be able to get at least 8 actions per second.\\
 The colour sensor turned out to react slower than the button, probably due to the fact that it has to cycle between different LEDs. An experiment was made in which a colour sensor made an RGB observation and this time was logged. It was compared to an experiment in which it observed both RGB, reflected light and ambient light. Both were run 10.000 times, taking 10 and 38 minutes respectively. \\
-\includegraphics[scale=0.7]{images/colour_response_histogram.png} \\
-With only RGB, we observed a mean response time of $0,062$ seconds, which is very comparable to the motor response time, but with a lower variance at $1,1\cdot 10^{-4}$. With everything, the mean response was $0,228$ seconds and a variance of $3,8 \cdot 10^{-4}$. It might be possible to reduce the delay by storing information on the brick such that the transfer between brick and computer only happens once, but since the sensor uses different lights for each observation, time would still be significantly longer than RGB only.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.7]{images/colour_response_histogram.png} 	
+	\caption{Histogram of  response times from the colour sensor if requesting only RGB colours, and if ambient and reflected light is also requested.}
+	\label{fig:responsetimecolour}
+\end{figure}
+With only RGB, we observed a mean response time of $0,062$ seconds, which is very comparable to the motor response time, but with a lower variance at $1,1\cdot 10^{-4}$. With everything, the mean response was $0,228$ seconds and a variance of $3,8 \cdot 10^{-4}$. The distribution of these response times can be seen in Figure \ref{fig:responsetimecolour}, from which it seems that the response times are at least low variance. \\
+It might be possible to reduce the delay by storing information on the brick such that the transfer between brick and computer only happens once, but since the sensor uses different lights for each observation, time would still be significantly longer than RGB only.
 
 
 \subsection{Motor Accuracy}
@@ -224,21 +235,33 @@ The colour sensor was chosen as a way to visualize KNN. We wanted to be able to 
 \subsection{Robot Design}
 The robot was built to be easy to use and consistent to allow similar observations from the colour sensor at different times. \\
 A mount was made for the sensor, that easily plugged into the robot, and which could provide readings from everything placed on top of it, allowing for regular distances to the observed object at one regular LEGO Technic block. Two buttons where added to the side of the robot for controls. \\
-The final design is simple and modular, allowing it to be easily disassembled into smaller parts and reassembled later. \\
-\includegraphics[scale=0.1,angle=90]{images/colour_robot_full.jpg} \\
-something about figure number and description? \\
+The final design is simple and modular, allowing it to be easily disassembled into smaller parts and reassembled later, and can be seen in Figure \ref{fig:colour_robot_full_shot}. \\
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.05,angle=90]{images/colour_robot_full.jpg} 	
+	\caption{Full top shot of the colour robot, featuring the colour sensor and mount (left side), the brick (middle) and the buttons (right side).}
+	\label{fig:colour_robot_full_shot}
+\end{figure}
 Since the robot has no moving parts, the results should be replicateable as along as the robot is built with 2 buttons and a color sensor, and the matter is kept still at a distance of one block.
 \subsection{The Learning}
 As planned we implemented KNN, as one of the simplest and most intuitive machine learning algorithms. For the data input we used only the RGB output from the color sensor. We wanted to plot in real time, and learned from the time-experiments that calling more values proved too much of a delay. For visualization, we used a 3d-plot of the observed colors, with the axes being red, green and blue values. \\
 We made two versions of KNN with the color sensor\footnote{The code for both of these is found commented in simple\_learning/KNN colors.ipynb}, and a more advanced neural network model\footnote{The code for this is commented in reinforcement\_colors/reinforced\_colors.ipynb.}
 \subsubsection{Colour learning: Internal LEGO based model}
-The first version is slightly silly, but colorful. Our dataset is started with either a base set (simple RGB values) or a few observations, in which we use the color sensor's built in predictions. Real-time KNN is then run, and we output our prediction as well as a 3d plot of our current observation (black triangle), together with all previous observations (coloured dots). Additional dots can be added by pressing a button, which adds the current observation and prediction as a true point in the data. This produces colorful plots, like the below plot. \\
-\includegraphics[scale=1]{images/ColourKNNversion1.png} \\
-something about figure number and description? \\
+The first version is slightly silly, but colorful. Our dataset is started with either a base set (simple RGB values) or a few observations, in which we use the color sensor's built in predictions. Real-time KNN is then run, and we output our prediction as well as a 3d plot of our current observation (black triangle), together with all previous observations (coloured dots). Additional dots can be added by pressing a button, which adds the current observation and prediction as a true point in the data. This produces colourful plots, as seen in Figure \ref{fig:colour_KNN_LEGO}. \\
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=1]{images/ColourKNNversion1.png} 	
+	\caption{Visualization output from the LEGO based KNN model. Here each coloured dot represents a data point with corresponding RGB values and the represented colour. Current observation, represented by a black square, is not featured.}
+	\label{fig:colour_KNN_LEGO}
+\end{figure}
 \subsubsection{Colour learning: Binary classifier}
-Since the above version uses starting data and the built-in predictions from LEGO, we also tried a different setup. Instead of prediction colours directly, we predict colour groups, which we will call group "red" and group "green". In this setup, the robot again predicts and plots in real time, but we now start with zero data, and rely only on the buttons. One button adds the prediction to the data set with label "red" and the other "green". This allows us to not rely on anything from LEGO, and allows us to make different splits, such as light versus dark colours, which could learn to differentiate light and dark blue. The plots are similar to before, but with fewer colours.\\
-\includegraphics[scale=1]{images/ColourKNNversion2.png} \\
-something about figure number and description? \\
+Since the above version uses starting data and the built-in predictions from LEGO, we also tried a different setup. Instead of prediction colours directly, we predict colour groups, which we will call group "red" and group "green". In this setup, the robot again predicts and plots in real time, but we now start with zero data, and rely only on the buttons. One button adds the prediction to the data set with label "red" and the other "green". This allows us to not rely on anything from LEGO, and allows us to make different splits, such as light versus dark colours, which could learn to differentiate light and dark blue. The plots are similar to before, but with fewer colours, as seen in figure \ref{fig:colour_KNN_binary}.\\
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=1]{images/ColourKNNversion2.png}	
+	\caption{Visualization output from the binary KNN model. Here each coloured dot represents a data point with corresponding RGB values and the represented group. Current observation, represented by a black square, is seen in the bottom left, near (0,0,0).}
+	\label{fig:colour_KNN_binary}
+\end{figure}
 \subsubsection{Colour learning: Neural Network and subject width}
 Finally, we implemented a more complicated system to work with other visualizations. We implemented a neural network, and wanted to visualize how learning and training works in this setup.  \\
 In this case, the robot has a list of allowed colors, starts with no data, and predicts from an untrained network. It reads RGB colours, but also reflected light and ambient light, since we are not running real-time. It displays scores for each color, and reads the highest scoring color aloud. A button press indicates whether this was correct or wrong, and it trains based on this feedback. This allows the user to view updates in predictions from step to step. The predictions are output on a list like below, updated with every new prediction \\
