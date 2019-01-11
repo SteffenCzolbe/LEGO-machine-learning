@@ -36,7 +36,7 @@
 \setcounter{tocdepth}{2}
 \setcounter{secnumdepth}{2}
 
-\author{Per Steffen Czolbe (wjq874)}
+\author{Per Steffen Czolbe (wjq874) \& Asger Hans Skovbjerg Christensen (tzw174)}
 \title{Reinforcement Learning with LEGO Mindstorms}
 \subtitle{Project Report}
 \date{Handed in: \today}
@@ -50,15 +50,12 @@
 
 
 \section{Introduction}
-scientific goal,
-educational goals,
-why machine learning for school,
-why LEGO,
-agenda by lego,
-why reinforcement learning,
-brief intro to machine learning,
-outline of the report,
-reference to github
+Machine learning growing in interest, and is getting wildly popular. Google trends show an almost 4 times increase in searches for "machine learning" over the last 5 years, and many online sites and universities are offering courses on it. \\
+The term "Machine Learning" refers to a collection of algorithmic and statistical models, as well as related data handling methods, and deals with many classical statistical problems, such as regression and classification, using more automated model approaches, relying on computers and algorithms for optimization and model improvement. \\
+This increasing interest in machine learning can serve as a foundation for earlier introduction to related topics, such as "overfitting", "training" and more generally "data". This could satisfy or feed this growing popularity, as well as generate more interest in and funding for university level and industry machine learning. \\
+An industry that's currently looking into machine learning is LEGO. Among other things, LEGO develops educational aids, to inspire children of different age groups and create an interest in STEM (Science, Technology, Engineering and Math)\cite{LEGOeducation}. LEGO both sells educational aids and collaborates directly with schools\cite{naerheden}. This project exists partially because LEGO contacted DIKU about machine learning, specifically interests in reinforcement learning. They were inspired by videos, in which people had used reinforcement learning with their LEGO Mindstorms robots to teach them to perform actions by learning on their own\cite{youtube_crawl}\cite{youtube_swing}. Reinforcement learning is a subject of machine learning that concerns itself with which action an actor should take to optimize reward on a future scale, and usually involves gathering data by trying actions and observing the consequences. \\
+LEGO was interested in the methods, to see how easily this could be implemented and how large the space of potential educational use was. \\
+This additional interest allows us to implement machine learning and reinforcement learning methods in practice, studying the practical implications when learning data is gathered in the physical world. It also means that we're interested in exploring the complexity and width of the space of educational use of LEGO Mindstorms for explaining and teaching machine learning and reinforcement learning. Thus, we intend to built robots and implement reinforcement learning algorithms on them, or create visualizations of training and prediction of models using them, to explore the complexity of this task, as well as the width of the subject both for future studies and for educational use. Each robot will be designed with a goal in mind, to learn some task and possibly visualize it, and as much as possible, they will cover a wide variety of methods. The code for the project is written in Python through Jupyter notebooks, and can be found on GitHub\footnote{https://github.com/SteffenCzolbe/LEGO-machine-learning}
 
 \section{EV3 System}
 The EV3 system is the third version of the LEGO Mindstorm family of robot toys. It contains a central processing component, called ''Brick``, to which motors, sensors and other peripheral devices can be attached. All components are embedded into plastic casings, which make them compatible with other LEGO parts. The LEGO Group markets the EV3 system to educational facilities and private persons in a package with build instructions and parts for multiple robots. The current product offering consists of 2 different packages to build a total of 9 robots, including the self-balancing two wheeled ``Gyroboy'' and a sorting machine that orders LEGO bricks based on their colour. The playful development of further robots by end users is encouraged. A large community of engaged hobby robot builders has formed around the EV3 platform.
@@ -106,7 +103,7 @@ One of the simplest sensors of the EV3 system is the button. It is a box-shaped 
 
 
 \subsubsection*{Colour Sensor}
-The EV3 colour sensor works by shining red, green, blue or all three colours of light and measuring values of the reflections. The sensor can measure colours, ambient light and reflected light, but since these are three different modes, retrieving all of them incurs triple sensor delay, which may be too slow for real-time use, this is investigated in a later section. The colour sensor has a built-in list of possible colours, and can measure and predict white, blue, black, green, red, yellow, brown and no colour. Since the sensor measures reflection, pointing it into the air will measure (close to) (0,0,0) which it categorises as no colour.
+The EV3 colour sensor works by shining red, green, blue or all three colours of light and measuring values of the reflections. The sensor can measure colours, ambient light and reflected light. When retrieving colours, the sensor cycles all three LEDS rapidly, when retrieving reflected light, only the red led is on, and when retrieving ambient light, only the blue led is on\cite{colour_sensor_python}. The colour sensor has a built-in list of possible colours, and can measure and predict white, blue, black, green, red, yellow, brown and no colour. Since the sensor measures reflection, pointing it into the air will measure (close to) (0,0,0) which it categorises as no colour.
 
 \subsubsection*{Ultrasonic Sensor}
 The EV3 Ultrasonic Sensor generates sound waves and reads their echoes to detect and measure distance from objects. It can also send single sound waves to work as sonar or listen for a sound wave that triggers the start of a program. Distances mesured range from 0-250cm. While the python bindings of this sensor return a distance measurement with an accuracy of up to 1mm \cite{ev3_python}, LEGO advertises an accuracy of  ``up to +/-1cm''. \cite{ultraosnic_sensor}
@@ -164,7 +161,7 @@ The colour sensor turned out to react slower than the button, probably due to th
 	\label{fig:responsetimecolour}
 \end{figure}
 With only RGB, we observed a mean response time of $0,062$ seconds, which is very comparable to the motor response time, but with a lower variance at $1,1\cdot 10^{-4}$. With everything, the mean response was $0,228$ seconds and a variance of $3,8 \cdot 10^{-4}$. The distribution of these response times can be seen in Figure \ref{fig:responsetimecolour}, from which it seems that the response times are at least low variance. \\
-It might be possible to reduce the delay by storing information on the brick such that the transfer between brick and computer only happens once, but since the sensor uses different lights for each observation, time would still be significantly longer than RGB only.
+It might be possible to reduce the delay by storing information on the brick such that the transfer between brick and computer only happens once, but since the connection delay is at most $0,0012$s (as evident from the button delay), the delay would still be significantly longer than RGB only.
 
 
 \subsection{Motor Accuracy}
@@ -235,7 +232,7 @@ The colour sensor was chosen as a way to visualize KNN. We wanted to be able to 
 \subsection{Robot Design}
 The robot was built to be easy to use and consistent to allow similar observations from the colour sensor at different times. \\
 A mount was made for the sensor, that easily plugged into the robot, and which could provide readings from everything placed on top of it, allowing for regular distances to the observed object at one regular LEGO Technic block. Two buttons where added to the side of the robot for controls. \\
-The final design is simple and modular, allowing it to be easily disassembled into smaller parts and reassembled later, and can be seen in Figure \ref{fig:colour_robot_full_shot}. \\
+The final design is simple and modular, allowing it to be easily disassembled into smaller parts and reassembled later, and can be seen in Figure \ref{fig:colour_robot_full_shot}.\footnote{More pictures found in additional\_robot\_images/Colour\_robot} \\
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.05,angle=90]{images/colour_robot_full.jpg} 	
@@ -428,9 +425,32 @@ In conclusion, we build a one-armed robot using LEGO parts, motors and sensors. 
 \pagebreak
 \section{Swing-Robot}
 \subsection{Problem}
-what task solved
+The swing was made as a more complicated reinforcement learning task, inspired by a similar robot found on youtube\cite{youtube_swing}. In this setup, the robot has to learn to swing, in our case, by swinging one or both legs back and forth, and will receive higher rewards the higher it swings. This creates several layers of complexity. The task itself is non-trivial, and tabular learning as we used for the crawling robot may be insufficient, but we're also working against gravity, and need to be able to update and react often enough. Finally, there is a case for making this problem recurrent, introducing another layer of complexity.
 \subsection{The Robot}
-description of the robot build
+The two basic robot designs seen in the video that inspired this idea\cite{youtube_swing} can be described as a "crouch"-style swing, in which the robot does up-down body movements, and a "pull-up"-style swing, in which the robot moves legs/limbs to swing. \\
+We decided to go for a "pull-up" style swing, with two legs that can move independently. See Figure \ref{fig:swing_robot}. \\
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{images/swing_robot_front}
+		\caption{Swing robot seen from the front. At the top of the picture you can see the robot mount lodged between two tables.}
+		\label{fig:swing_robot_front}
+	\end{subfigure}
+	\begin{subfigure}{.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{images/swing_robot_side}
+		\caption{Swing robot seen from the side, here the gyroscope and the leg mounting is visible.}
+		\label{fig:swing_robot_side}
+	\end{subfigure}%
+	\caption{The Swing robot design. The legs can move independently, while the 'arms' swing freely on a bar. A gyroscope is mounted on the back of the robot.}
+	\label{fig:swing_robot}
+\end{figure}
+
+To be able to swing, the robot must move some amount of counterweight, this is achieved by having each "leg" consist of a large motor mounted backwards, such that the motor part is moved, see Figure \ref{fig:swing_robot_side}.
+On the back of the robot, a gyroscope is mounted, to measure angle and acceleration. The height of the gyroscope was chosen to provide the most stable observations and the least drift in angle over time. \\
+This design was chosen to allow for both easy and complicated setups, where the legs can be controlled together or individually. \\
+Instead of creating a large swing frame, a mount was made to fit in between two tables, this proved to be very stable. An alternative with similar stability would be an aluminium (or equivalent) frame, which is available for future projects. This frame is visible in Figure \ref{fig:swing_robot_front}
 \subsection{The Learning}
 implementation of learning, choices made in picking and implementing algorithm
 \subsection{Results}
@@ -439,7 +459,7 @@ final results
 includes issues / future work
 
 \section{Future Work}
-Shared/independant
+Shared/independent
 future robots/  multi actor learning
 
 \section{Individual contributions}
