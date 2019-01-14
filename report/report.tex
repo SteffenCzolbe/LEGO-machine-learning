@@ -50,12 +50,17 @@
 
 
 \section{Introduction}
-Machine learning growing in interest, and is getting wildly popular. Google trends show an almost 4 times increase in searches for "machine learning" over the last 5 years, and many online sites and universities are offering courses on it. \\
-The term "Machine Learning" refers to a collection of algorithmic and statistical models, as well as related data handling methods, and deals with many classical statistical problems, such as regression and classification, using more automated model approaches, relying on computers and algorithms for optimization and model improvement. \\
-This increasing interest in machine learning can serve as a foundation for earlier introduction to related topics, such as "overfitting", "training" and more generally "data". This could satisfy or feed this growing popularity, as well as generate more interest in and funding for university level and industry machine learning. \\
-An industry that's currently looking into machine learning is LEGO. Among other things, LEGO develops educational aids, to inspire children of different age groups and create an interest in STEM (Science, Technology, Engineering and Math)\cite{LEGOeducation}. LEGO both sells educational aids and collaborates directly with schools\cite{naerheden}. This project exists partially because LEGO contacted DIKU about machine learning, specifically interests in reinforcement learning. They were inspired by videos, in which people had used reinforcement learning with their LEGO Mindstorms robots to teach them to perform actions by learning on their own\cite{youtube_crawl}\cite{youtube_swing}. Reinforcement learning is a subject of machine learning that concerns itself with which action an actor should take to optimize reward on a future scale, and usually involves gathering data by trying actions and observing the consequences. \\
-LEGO was interested in the methods, to see how easily this could be implemented and how large the space of potential educational use was. \\
-This additional interest allows us to implement machine learning and reinforcement learning methods in practice, studying the practical implications when learning data is gathered in the physical world. It also means that we're interested in exploring the complexity and width of the space of educational use of LEGO Mindstorms for explaining and teaching machine learning and reinforcement learning. Thus, we intend to built robots and implement reinforcement learning algorithms on them, or create visualizations of training and prediction of models using them, to explore the complexity of this task, as well as the width of the subject both for future studies and for educational use. Each robot will be designed with a goal in mind, to learn some task and possibly visualize it, and as much as possible, they will cover a wide variety of methods. The code for the project is written in Python through Jupyter notebooks, and can be found on GitHub\footnote{https://github.com/SteffenCzolbe/LEGO-machine-learning}
+Machine learning growing in interest, and is getting wildly popular. Google trends show an almost 4 times increase in searches for "machine learning" over the last 5 years\cite{googletrendsML}, and many online sites and universities are offering courses on it.
+
+The term "Machine Learning" refers to a collection of algorithmic and statistical models, as well as related data handling methods, and deals with many classical statistical problems, such as regression and classification, using more automated model approaches, relying on computers and algorithms for optimization and model improvement.
+
+This increasing interest in machine learning can serve as a foundation for earlier introduction to related topics, such as "overfitting", "training" and more generally "data". This could satisfy or feed the growing popularity, as well as generate more interest in and funding for university level and industry machine learning. 
+
+An industry that's currently looking into machine learning is LEGO. Among other things, LEGO develops educational aids, to inspire children of different age groups and create an interest in STEM (Science, Technology, Engineering and Maths)\cite{LEGOeducation}. LEGO both sells educational aids and collaborates directly with schools\cite{naerheden}. This project exists partially because LEGO contacted DIKU about machine learning, specifically interests in reinforcement learning. They were inspired by videos, in which people had used reinforcement learning with their LEGO Mindstorms robots to teach them to perform actions by learning on their own\cite{youtube_crawl}\cite{youtube_swing}. Reinforcement learning is a subject of machine learning that concerns itself with which action an actor should take to optimize reward on a future scale, and usually involves gathering data by trying actions and observing the consequences. 
+
+LEGO was interested in the methods, to see how easily this could be implemented and how large the space of potential educational use was.
+
+This additional interest allows us to implement machine learning and reinforcement learning methods in practice, studying the practical implications when learning data is gathered in the physical world. It also means that we're interested in exploring the complexity and width of the space of educational use of LEGO Mindstorms for explaining and teaching machine learning and reinforcement learning. Thus, we intend to built robots and implement reinforcement learning algorithms on them, or create visualizations of training and prediction of models using them, to explore the complexity of this task, as well as the width of the subject both for future studies and for educational use. Each robot will be designed with a goal in mind, to learn some task and possibly visualize it, and as much as possible, they will cover a wide variety of methods. The code for the project is written in Python through Jupyter notebooks, and can be found on GitHub\footnote{https://github.com/SteffenCzolbe/LEGO-machine-learning}.
 
 \section{EV3 System}
 The EV3 system is the third version of the LEGO Mindstorm family of robot toys. It contains a central processing component, called ''Brick``, to which motors, sensors and other peripheral devices can be attached. All components are embedded into plastic casings, which make them compatible with other LEGO parts. The LEGO Group markets the EV3 system to educational facilities and private persons in a package with build instructions and parts for multiple robots. The current product offering consists of 2 different packages to build a total of 9 robots, including the self-balancing two wheeled ``Gyroboy'' and a sorting machine that orders LEGO bricks based on their colour. The playful development of further robots by end users is encouraged. A large community of engaged hobby robot builders has formed around the EV3 platform.
@@ -143,25 +148,31 @@ To circumvent these problems, a setup of the main program running on a computer 
 To build models that can demonstrate reinforcement learning reliably, we need accurate and reproducible sensor measurements and motor movements. We design experiments to measure the time delay and accuracy of sensors and motors. We empirically determine which ways of controlling the motors yields the most reliable outcomes, and discuss which sensors need to be calibrated before use. 
 \subsection{Time Delays}
 
-We tested the response time of the motors, buttons and the colour sensor, to get an understanding of how quickly we would be able to react, as well as how reliable this connection was. \footnote{The code for this can be found commented in experiments/Response speed experiment.ipynb.} \\
-For the button, a single button was connected, and we measured the time until the robot noticed that the button wasn't pressed, and repeated, this setup was very simple and was repeated 1000 times taking 19s. Mean button response was $0,019$s with a very low variance at $4,8\cdot 10^{-6}$s$^2$. \\
-Motor reaction speed was tested with a slightly more complicated setup, in which a large motor had an arm attached, that had to move to hit a button. The arm was positioned right in front of the button, such that any amount of movement would set off the button, and it would reset position after each round. A video of this setup can be found in the notebook. Motor response testing was repeated 1000 times, and took 85s. Since the time involved a button delay, a value without this was calculated by substracting the button delay mean. The mean of the new motor-only delay was $0,066$ seconds and the motor had much higher variance than the button at $3,6\cdot 10^{-4}$ seconds$^2$ and a $95\%$ percentile of $0,124$ seconds. This is also clearly visible in Figure \ref{fig:responsetimemotorbutt}. \\
+We tested the response time of the motors, buttons and the colour sensor, to get an understanding of how quickly we would be able to react, as well as how reliable this connection was. \footnote{The code for this can be found commented in experiments/Response speed experiment.ipynb.} 
+
+For the button, a single button was connected, and we measured the time until the robot noticed that the button wasn't pressed, and repeated, this setup was very simple and was repeated 1000 times taking 19s. Mean button response was $0,019$s with a very low variance at $4,8\cdot 10^{-6}$s$^2$.
+
+Motor reaction speed was tested with a slightly more complicated setup, in which a large motor had an arm attached, that had to move to hit a button. The arm was positioned right in front of the button, such that any amount of movement would set off the button, and it would reset position after each round. A video of this setup can be found in the notebook. Motor response testing was repeated 1000 times, and took 85s. Since the time involved a button delay, a value without this was calculated by substracting the button delay mean. The mean of the new motor-only delay was $0,066$ seconds and the motor had much higher variance than the button at $3,6\cdot 10^{-4}$ seconds$^2$ and a $95\%$ percentile of $0,124$ seconds. This is also clearly visible in Figure \ref{fig:responsetimemotorbutt}.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.7]{images/motor_button_response_histogram.png}	
 	\caption{Histogram of  response times from buttons and motors.}
 	\label{fig:responsetimemotorbutt}
 \end{figure} 
-From this it appears that motor response is not only slower, but also a bit more unstable than the button response. Note though, that more factors, such as speed and real-world interference could have affected the motor response speed experiment. Still, even if assuming the 95\% percentile, we should be able to get at least 8 actions per second.\\
-The colour sensor turned out to react slower than the button, probably due to the fact that it has to cycle between different LEDs. An experiment was made in which a colour sensor made an RGB observation and this time was logged. It was compared to an experiment in which it observed both RGB, reflected light and ambient light. Both were run 10.000 times, taking 10 and 38 minutes respectively. \\
+From this it appears that motor response is not only slower, but also a bit more unstable than the button response. Note though, that more factors, such as speed and real-world interference could have affected the motor response speed experiment. Still, even if assuming the 95\% percentile, we should be able to get at least 8 actions per second.
+
+The colour sensor turned out to react significantly slower than the button, probably due to the fact that it has to cycle between different LEDs. An experiment was made in which a colour sensor made an RGB observation and this time was logged. It was compared to an experiment in which it observed both RGB, reflected light and ambient light. Both were run 10.000 times, taking 10 and 38 minutes respectively.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.7]{images/colour_response_histogram.png} 	
 	\caption{Histogram of  response times from the colour sensor if requesting only RGB colours, and if ambient and reflected light is also requested.}
 	\label{fig:responsetimecolour}
 \end{figure}
-With only RGB, we observed a mean response time of $0,062$ seconds, which is very comparable to the motor response time, but with a lower variance at $1,1\cdot 10^{-4}$. With everything, the mean response was $0,228$ seconds and a variance of $3,8 \cdot 10^{-4}$. The distribution of these response times can be seen in Figure \ref{fig:responsetimecolour}, from which it seems that the response times are at least low variance. \\
-It might be possible to reduce the delay by storing information on the brick such that the transfer between brick and computer only happens once, but since the connection delay is at most $0,0012$s (as evident from the button delay), the delay would still be significantly longer than RGB only.
+With only RGB, we observed a mean response time of $0,062$ seconds, which is very comparable to the motor response time, but with a lower variance at $1,1\cdot 10^{-4}$. With everything, the mean response was $0,228$ seconds and a variance of $3,8 \cdot 10^{-4}$. The distribution of these response times can be seen in Figure \ref{fig:responsetimecolour}, from which it seems that the response times are at least low variance.
+
+It might be possible to reduce the delay by storing information on the brick such that the transfer between brick and computer only happens once, but since the connection delay is at most $0,012$s (as evident from the button delay), the delay would still be significantly longer than RGB only.
 
 
 \subsection{Motor Accuracy}
@@ -170,7 +181,7 @@ Reinforcement learning algorithms rely on repetition of the same motions many ti
 \subsubsection*{Experimental Setup}
 The experiment consists of an arm attached to a motor. We rotate the arm in a 90 degree angle back and forth. After every 25 iterations we measure the offset from the starting position externally with a set square. To measure the influence of weight on the results we use two independent arms, one without a weight and the other one weighted by three heavy metals balls. The experimental set-up is shown in figure \ref{fig:angle_experiment}.
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.35\linewidth]{images/angle_experiment}
 \caption{Experiment to measure motor accuracy. The two arms (gray) swing back and forth in a 90 degree angle. One arm is weighted down by three heavy metal balls.}
@@ -218,33 +229,41 @@ In conclusion, to attain the highest level of accuracy and reproducibility, moto
 \subsection{Gyroscope accuracy}
 
 \subsection{Calibration} \label{calibration}
-Servo motors and gyroscope sensors are initialized when the brick is restarted. All other sensors require no calibration.
+Servo motors and gyroscope sensors are initialized when the brick is restarted, the colour sensor has a built-in white value which can be recalibrated. All other sensors require no calibration.
 
 On system start, the position of the motor is initialized as 0 degrees. If the robot is dependent on absolute positional values, it is important to calibrate the 0-point. This can either be done by moving the motor forcefully into the correct position before starting the brick, or using more elaborate constructions of moving the motor against a button, until the button is pressed. This gives certainty over the 0-position of the motor and can be used to calibrate the rotation.
 
 The gyroscope initializes its orientation at system start as 0 degrees. Further, it assumes to be not in motion during system start. All acceleration measurements are in relation to this value taken during system start. Since the rotational angle returned by the gyroscope is calculated as the integral over acceleration measurements, even a slight inaccuracy in acceleration will accumulate to a significant drift in angle over time. This drift has to be monitored and adjusted for. This can be done either programmatic, or by restarting the system to re-calibrate the sensor.
 
+The colour sensor can be re-calibrated to a new relative white, but this is only used for normalization of observed colour values (originally from 0-1020) to the RGB scale. If not recalibrated, the sensor uses 300 as the maximal expected white value.
+
 \pagebreak
 \section{Colour Detection}
 \subsection{Problem}
 A common first topic when learning about machine learning is the KNN algorithm, as it's simple to understand, allowing it to be a comparison for other models, or a base model to use when explaining other topics not specific to a model.
+
 The colour sensor was chosen as a way to visualize KNN. We wanted to be able to visualize how machine learning updated after data was added and what the basis for decisions were, using a simple and easy to understand setup, expanding on the simplicity of KNN by adding visual or even physical aids.
 \subsection{Robot Design}
-The robot was built to be easy to use and consistent to allow similar observations from the colour sensor at different times. \\
-A mount was made for the sensor, that easily plugged into the robot, and which could provide readings from everything placed on top of it, allowing for regular distances to the observed object at one regular LEGO Technic block. Two buttons where added to the side of the robot for controls. \\
-The final design is simple and modular, allowing it to be easily disassembled into smaller parts and reassembled later, and can be seen in Figure \ref{fig:colour_robot_full_shot}.\footnote{More pictures found in additional\_robot\_images/Colour\_robot} \\
+The robot was built to be easy to use and consistent to allow similar observations from the colour sensor at different times.
+
+A mount was made for the sensor, that easily plugged into the robot, and which could provide readings from everything placed on top of it, allowing for regular distances to the observed object at one regular LEGO Technic block. Two buttons where added to the side of the robot for controls.
+
+The final design is simple and modular, allowing it to be easily disassembled into smaller parts and reassembled later, and can be seen in Figure \ref{fig:colour_robot_full_shot}.\footnote{More pictures found in additional\_robot\_images/Colour\_robot}
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.05,angle=90]{images/colour_robot_full.jpg} 	
 	\caption{Full top shot of the colour robot, featuring the colour sensor and mount (left side), the brick (middle) and the buttons (right side).}
 	\label{fig:colour_robot_full_shot}
 \end{figure}
-Since the robot has no moving parts, the results should be replicateable as along as the robot is built with 2 buttons and a color sensor, and the matter is kept still at a distance of one block.
+Since the robot has no moving parts, the results should be easily replicateable as along as the robot is built with 2 buttons and a color sensor, and the matter is kept still at a distance of one block.
 \subsection{The Learning}
-As planned we implemented KNN, as one of the simplest and most intuitive machine learning algorithms. For the data input we used only the RGB output from the color sensor. We wanted to plot in real time, and learned from the time-experiments that calling more values proved too much of a delay. For visualization, we used a 3d-plot of the observed colors, with the axes being red, green and blue values. \\
+As planned we implemented KNN, as one of the simplest and most intuitive machine learning algorithms. For the data input we used only the RGB output from the color sensor. We wanted to plot in real time, and learned from the time-experiments that calling more values proved too much of a delay. For visualization, we used a 3d-plot of the observed colors, with the axes being red, green and blue values.
+
 We made two versions of KNN with the color sensor\footnote{The code for both of these is found commented in simple\_learning/KNN colors.ipynb}, and a more advanced neural network model\footnote{The code for this is commented in reinforcement\_colors/reinforced\_colors.ipynb.}
 \subsubsection{Colour learning: Internal LEGO based model}
-The first version is slightly silly, but colorful. Our dataset is started with either a base set (simple RGB values) or a few observations, in which we use the color sensor's built in predictions. Real-time KNN is then run, and we output our prediction as well as a 3d plot of our current observation (black triangle), together with all previous observations (coloured dots). Additional dots can be added by pressing a button, which adds the current observation and prediction as a true point in the data. This produces colourful plots, as seen in Figure \ref{fig:colour_KNN_LEGO}. \\
+The first version is slightly silly, but colorful. Our dataset is started with either a base set (simple RGB values) or a few observations, in which we use the color sensor's built in predictions. Real-time KNN is then run, and we output our prediction as well as a 3d plot of our current observation (black triangle), together with all previous observations (coloured dots). Additional dots can be added by pressing a button, which adds the current observation and prediction as a true point in the data. This produces colourful plots, as seen in Figure \ref{fig:colour_KNN_LEGO}.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=1]{images/ColourKNNversion1.png} 	
@@ -252,7 +271,8 @@ The first version is slightly silly, but colorful. Our dataset is started with e
 	\label{fig:colour_KNN_LEGO}
 \end{figure}
 \subsubsection{Colour learning: Binary classifier}
-Since the above version uses starting data and the built-in predictions from LEGO, we also tried a different setup. Instead of prediction colours directly, we predict colour groups, which we will call group "red" and group "green". In this setup, the robot again predicts and plots in real time, but we now start with zero data, and rely only on the buttons. One button adds the prediction to the data set with label "red" and the other "green". This allows us to not rely on anything from LEGO, and allows us to make different splits, such as light versus dark colours, which could learn to differentiate light and dark blue. The plots are similar to before, but with fewer colours, as seen in figure \ref{fig:colour_KNN_binary}.\\
+Since the above version uses starting data and the built-in predictions from LEGO, we also tried a different setup. Instead of prediction colours directly, we predict colour groups, which we will call group "red" and group "green". In this setup, the robot again predicts and plots in real time, but we now start with zero data, and rely only on the buttons. One button adds the prediction to the data set with label "red" and the other "green". This allows us to not rely on anything from LEGO, and allows us to make different splits, such as light versus dark colours, which could learn to differentiate light and dark blue. The plots are similar to before, but with fewer colours, as seen in figure \ref{fig:colour_KNN_binary}.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=1]{images/ColourKNNversion2.png}	
@@ -260,7 +280,8 @@ Since the above version uses starting data and the built-in predictions from LEG
 	\label{fig:colour_KNN_binary}
 \end{figure}
 \subsubsection{Colour learning: Neural Network and subject width}
-Finally, we implemented a more complicated system to work with other visualizations. We implemented a neural network, and wanted to visualize how learning and training works in this setup.  \\
+Finally, we implemented a more complicated system to work with other visualizations. We implemented a neural network, and wanted to visualize how learning and training works in this setup. 
+
 In this case, the robot has a list of allowed colors, starts with no data, and predicts from an untrained network. It reads RGB colours, but also reflected light and ambient light, since we are not running real-time. It displays scores for each color, and reads the highest scoring color aloud. A button press indicates whether this was correct or wrong, and it trains based on this feedback. This allows the user to view updates in predictions from step to step. The predictions are output on a list like below, updated with every new prediction \\
 
 'Black : 0.13146167' \\
@@ -276,13 +297,16 @@ In this case, the robot has a list of allowed colors, starts with no data, and p
 'Yellow : 0.13185982' 
 
 \subsection{Sub-results}
-Two versions of a robot that uses KNN were implemented and built with visualization in mind. Both versions are functional, and can be used to explain and link how data affects predictions in machine learning.  \\
-We implemented a simple Neural Network model, that may be useful in explaining more complicated machine learning models. \\
+Two versions of a robot that uses KNN were implemented and built with visualization in mind. Both versions are functional, and can be used to explain and link how data affects predictions in machine learning.
+
+We implemented a simple Neural Network model, that may be useful in explaining more complicated machine learning models.
+
 We also learned a great deal about visualization and limitations to this, which will be presented and discussed in the following section.
 \subsection{Discussion}
 We encountered a number of difficulties related to these experiments, but have also found many avenues of possible future work.
 \subsubsection{Discussion: Visualization}
-We originally wanted to show the decision boundary for our learning system, to show how it changes with time. Unfortunately, we found no good way to visualize this in 3d, so instead we looked into dimensionality reduction. We tried reducing dimensionality using PCA, and plot a decision boundary in the resulting 2d space, but this proved problematic, both in our setup and generally. Since we wanted to run real-time we had issues running the PCA on the decision boundary. To get enough points for a proper boundary in 3d space we had to use at least 1 million points, which took way too long to process to be able to run real-time. If instead we didn't run real-time, we could plot the PCA values and a decision boundary in this space, but the values would be mostly meaningless. In the 3d space it at least somewhat makes sense, you have an intuition about what changes if we increase on the "red" axis and so on. In the PCA space we're left with principal components instead, and the points from previous observations would not even be stationary. \\
+We originally wanted to show the decision boundary for our learning system, to show how it changes with time. Unfortunately, we found no good way to visualize this in 3d, so instead we looked into dimensionality reduction. We tried reducing dimensionality using PCA, and plot a decision boundary in the resulting 2d space, but this proved problematic, both in our setup and generally. Since we wanted to run real-time we had issues running the PCA on the decision boundary. To get enough points for a proper boundary in 3d space we had to use at least 1 million points, which took way too long to process to be able to run real-time. If instead we didn't run real-time, we could plot the PCA values and a decision boundary in this space, but the values would be mostly meaningless. In the 3d space it at least somewhat makes sense, you have an intuition about what changes if we increase on the "red" axis and so on. In the PCA space we're left with principal components instead, and the points from previous observations would not even be stationary.
+
 Some ways to get around this issue would be to only read two colour channels (removing the need to reduce dimensionality), or find another experiment which only takes two inputs. 
 \subsubsection{Discussion: Neural Network and future work}
 The neural network setup was made to demonstrate that the colour sensor setup can be extended to more complicated machine learning systems, to show some width of the space of possible educational use. It was implemented, but as a very simple form. It takes a number of colours initially, and predicts between these, but for more than 2 colours (or colour groups) this makes training complicated. The model was implemented such that if it predicted the first colour on our list, and we respond correct, it trains with (1,0,0,0) (or similar for more colours) while instead if we respond wrong, it trains (0,1,1,1) (so it improves every other colour). This setup is not optimal, and is simply a POC. If instead we want to focus on this task to improve it, it may be able to use methods from reinforcement or online learning, since we're dealing with a reduced feedback (right/wrong) setup (this was an idea from the start, as is obvious from the file name). The reason this wasn't implemented was a time constraint built into the setup. At the moment, prediction is done by pressing both buttons, which causes the prediction list to update, and the robot to say the highest scoring colour. At this point you can press a button for yes or no. Unfortunately, you need a lot of observations to properly train the network, which makes it very time consuming and not very education-friendly. We ran a test with 150 entries, observing only 3 different colours. After this, it could still not differentiate the 3 colours. We believe that implementing a proper reinforcement or bandit setup would greatly improve the training, but 150 observations or just 50 that all have to be done manually is still a significant barrier for the neural network setup. Other options could be to pre-load it with some amount of data, but this would remove the chance to see early learning. The output for the neural network model could of course be combined with a plot like the 3d we made for the KNN model, or a PCA/decision boundary or similar, with most of the same yields and issues as discussed before. We believe the neural network setup has potential, but has some hurdles to overcome before it can be useful in an educational setting.
@@ -427,8 +451,10 @@ In conclusion, we build a one-armed robot using LEGO parts, motors and sensors. 
 \subsection{Problem}
 The swing was made as a more complicated reinforcement learning task, inspired by a similar robot found on youtube\cite{youtube_swing}. In this setup, the robot has to learn to swing, in our case, by swinging one or both legs back and forth, and will receive higher rewards the higher it swings. This creates several layers of complexity. The task itself is non-trivial, and tabular learning as we used for the crawling robot may be insufficient, but we're also working against gravity, and need to be able to update and react often enough. Finally, there is a case for making this problem recurrent, introducing another layer of complexity.
 \subsection{The Robot}
-The two basic robot designs seen in the video that inspired this idea\cite{youtube_swing} can be described as a "crouch"-style swing, in which the robot does up-down body movements, and a "pull-up"-style swing, in which the robot moves legs/limbs to swing. \\
-We decided to go for a "pull-up" style swing, with two legs that can move independently. See Figure \ref{fig:swing_robot}. \\
+The two basic robot designs seen in the video that inspired this idea\cite{youtube_swing} can be described as a "crouch"-style swing, in which the robot does up-down body movements, and a "pull-up"-style swing, in which the robot moves legs/limbs to swing.
+
+We decided to go for a "pull-up" style swing, with two legs that can move independently. See Figure \ref{fig:swing_robot}.
+
 \begin{figure}[H]
 	\centering
 	\begin{subfigure}{.48\textwidth}
@@ -448,8 +474,10 @@ We decided to go for a "pull-up" style swing, with two legs that can move indepe
 \end{figure}
 
 To be able to swing, the robot must move some amount of counterweight, this is achieved by having each "leg" consist of a large motor mounted backwards, such that the motor part is moved, see Figure \ref{fig:swing_robot_side}.
-On the back of the robot, a gyroscope is mounted, to measure angle and acceleration. The height of the gyroscope was chosen to provide the most stable observations and the least drift in angle over time. \\
-This design was chosen to allow for both easy and complicated setups, where the legs can be controlled together or individually. \\
+On the back of the robot, a gyroscope is mounted, to measure angle and acceleration. The height of the gyroscope was chosen to provide the most stable observations and the least drift in angle over time.
+
+This design was chosen to allow for both easy and complicated setups, where the legs can be controlled together or individually.
+
 Instead of creating a large swing frame, a mount was made to fit in between two tables, this proved to be very stable. An alternative with similar stability would be an aluminium (or equivalent) frame, which is available for future projects. This frame is visible in Figure \ref{fig:swing_robot_front}
 \subsection{The Learning}
 implementation of learning, choices made in picking and implementing algorithm
@@ -472,9 +500,9 @@ Table \ref{tab:contributions} shows the individual contributions to the report b
 		Motor Accuracy & Time delays\\
 		Ultrasound Sensor & Colour Sensor\\
 		Calibration & Colour Detection\\
-        Crawl Robot & \\
-	     & \\
-	     & \\
+        Crawl Robot & Colour Robot \\
+	     & Swing Robot: problem\\
+	     & Swing Robot: robot design \\
 	     & \\
      
 		      
