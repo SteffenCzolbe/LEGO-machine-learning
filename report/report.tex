@@ -123,11 +123,13 @@ While working with the sensor on the crawling robot, we noticed the importance o
 \end{figure}
 
 \subsubsection*{Gyroscope}
-The gyroscope sensor is an accelerometer. It measures angular acceleration with a sample rate of 1kHz. By taking the integral of the acceleration, it is able to approximate angles \cite{gyroscope}. Since the gyroscope relies on proper calibration and its angle measurements are  an approximation, they are often highly unreliable. We discuss ways of dealing with this in the calibration and accuracy section.
+The gyroscope sensor detects rotational motion in the plane. This can be used to measure motion of a robot. Applications are self-balancing robots, or measuring the angle of a turn of a driving robot.
+
+The gyroscope sensor is an accelerometer. It measures angular acceleration with a sample rate of 1kHz. By taking the integral of the acceleration, it is able to approximate angles \cite{gyroscope}. Since the gyroscope relies on calibration and its angle measurements are an approximation, they are often highly unreliable. We discuss ways of dealing with this in the calibration and accuracy section.
 
 
 \subsection{Software}
-The LEGO company ships the EV3 platform with a software system centred around its own proprietary graphical programming language based on LabVIEW. The graphical interface enables people with limited programming experience to quickly develop simple programs that can be executed on the Brick. The graphical language is supported by an editor available as a program for Windows and Mac, and as an app for Android and iOS.
+The EV3 platform is sold with a software system centred around LEGO's own proprietary graphical programming language based on LabVIEW. The programming language with a graphical interface enables people with limited programming experience to quickly develop simple programs that can be executed on the Brick. The graphical language is supported by an editor available as a program for Windows and Mac, and as an app for Android and iOS.
 
 While the default software is well supported by the editor and operating system of the brick, more experienced programmers might prefer a more capable language. Multiple community driven software packages exist for this purpose. These support languages such as matlab, python, java, javascript, C++, C, GO, Ruby, Perl, R, Lua, even direct control of the robot via command line is possible \cite{ev3dev}. We discuss a specific development set up in the next section.
 
@@ -223,10 +225,20 @@ During the experiment we also measured the range of motion that is possible with
 \bigskip
 In conclusion, to attain the highest level of accuracy and reproducibility, motors should be moved to absolute positions and the stop pattern \texttt{'hold'} should be used. We note however that motors still allow for free movement of about 12 degrees without providing any breaking or pushback.
 
+\subsection{Gyroscope Accuracy}
+A common complain about the EV3 system is the unreliability of the gyroscope sensor. Users commonly report issues with a 'drift' of measurements, where a non-moving sensor reports a constant non-zero speed, and angle measurements that shift over time \cite{gyro_inaccurate}. It appears that without any extra steps, the gyroscope sensor is the most unreliable out of all sensors available for the EV3 platform.
 
+To understand the drift in angle measurements, we have to understand how the gyroscope works. Even though the sensor is marketed as a gyroscope, it is an accelerometer. The sensor measures acceleration. Based on the acceleration measurements, it calculates the first integral to approximate speed, and the second integral to approximate a position or angle. When initializing, the sensor assumes to be standing still. Thus the acceleration level measured at system start is assumed to be no acceleration. If there is a slight inaccuracy, the speed and angle approximations accumulate errors over time. To reduce the drift, it is important to calibrate the sensor very accurately, for example by ensuring there is no motion in the system when it is powered on. However, the drift can not be eliminated completely. Even highly accurate gyroscopes, as used for example in space exploration, experience a drift an angle measurements by about 1 degree a year. In consumer goods, the drift is more significant, with mobile phones commonly experiencing drift of over 1 degree a minute \cite{gyro_drift}. To account for this drift, it is important to re-calibrate the sensor frequently.
 
+Once the sensor is properly calibrated, it measures \texttt{angle} and \texttt{rate}, where \texttt{rate} describes the rate of angle change in degrees per second. Figure \ref{fig:pendulum} visualizes values obtained from the sensor. In the experiment we attach the gyroscope to a pendulum of $30$cm length and raise the pendulum to an angle of approx 60 degrees. We release the pendulum and plot measurements taken during the swinging motion. We can observe that the angle, plotted in blue, forms a declining sinus form, as the pendulum swings back and forth. In orange we see the acceleration, which by manual inspection seems to be roughly the first derivative of the angle measurements, as we would expect.
 
-\subsection{Gyroscope accuracy}
+\begin{figure}
+\centering
+\includegraphics[width=0.6\linewidth]{images/pendulum}
+\caption{Measurement of a well calibrated gyroscope attached to a pendulum. Angle of the pendulum in blue, acceleration in orange. No drift in angle measurements is apparent in the 10 second timeframe.}
+\label{fig:pendulum}
+\end{figure}
+
 
 \subsection{Calibration} \label{calibration}
 Servo motors and gyroscope sensors are initialized when the brick is restarted, the colour sensor has a built-in white value which can be recalibrated. All other sensors require no calibration.
@@ -479,6 +491,9 @@ On the back of the robot, a gyroscope is mounted, to measure angle and accelerat
 This design was chosen to allow for both easy and complicated setups, where the legs can be controlled together or individually.
 
 Instead of creating a large swing frame, a mount was made to fit in between two tables, this proved to be very stable. An alternative with similar stability would be an aluminium (or equivalent) frame, which is available for future projects. This frame is visible in Figure \ref{fig:swing_robot_front}
+
+
+
 \subsection{The Learning}
 implementation of learning, choices made in picking and implementing algorithm
 \subsection{Results}
