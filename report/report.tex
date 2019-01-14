@@ -495,15 +495,20 @@ Instead of creating a large swing frame, a mount was made to fit in between two 
 
 
 \subsection{The Learning}
-implementation of learning, choices made in picking and implementing algorithm
+To train the swing robot, we implemented covariance matrix adaptation evolution strategy (CMA-ES). CMA-ES is regarded as the state of the art in evolutionary and numerical optimization, and we have adapted it for reinforcement learning. Evolutionary strategies optimize by creating new candidate solutions that can be seen as offspring of the previous candidate solutions, featuring a combination of qualities, maybe with some mutations.
+
+For training the swing, an epoch consists of 30 seconds, and the reward was set to be the highest absolute acceleration achieved in the epoch.
 \subsection{Results}
 final results
 \subsection{Discussion}
 includes issues / future work
-
+ability to move legs independently, better single-leg movement (when legs count as one), recurrent version, better response speed for more (better) sensor observations and faster motor controls
+vibrations from size of swing
 \section{Future Work}
 Shared/independent
 future robots/  multi actor learning
+generalized systems (one system that can learn both crawling, swinging etc)
+
 
 \section{Individual contributions}
 Table \ref{tab:contributions} shows the individual contributions to the report by each of the graded students.
