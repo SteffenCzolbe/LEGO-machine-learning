@@ -56,11 +56,11 @@ The term "Machine Learning" refers to a collection of algorithmic and statistica
 
 This increasing interest in machine learning can serve as a foundation for earlier introduction to related topics, such as "overfitting", "training" and more generally "data". This could satisfy or feed the growing popularity, as well as generate more interest in and funding for university level and industry machine learning. 
 
-An industry that's currently looking into machine learning is LEGO. Among other things, LEGO develops educational aids, to inspire children of different age groups and create an interest in STEM (Science, Technology, Engineering and Maths)\cite{LEGOeducation}. LEGO both sells educational aids and collaborates directly with schools\cite{naerheden}. This project exists partially because LEGO contacted DIKU about machine learning, specifically interests in reinforcement learning. They were inspired by videos, in which people had used reinforcement learning with their LEGO Mindstorms robots to teach them to perform actions by learning on their own\cite{youtube_crawl}\cite{youtube_swing}. Reinforcement learning is a subject of machine learning that concerns itself with which action an actor should take to optimize reward on a future scale, and usually involves gathering data by trying actions and observing the consequences. 
+An industry that's currently looking into machine learning is LEGO. Among other things, LEGO develops educational aids, to inspire children of different age groups and create an interest in STEM (Science, Technology, Engineering and Maths)\cite{LEGOeducation}. LEGO both sells educational aids and collaborates directly with schools\cite{naerheden}. This project exists partially because LEGO contacted DIKU about machine learning, specifically interests in reinforcement learning. LEGO was inspired by videos, in which people had used reinforcement learning with their LEGO Mindstorms robots to teach them to perform actions by learning on their own\cite{youtube_crawl}\cite{youtube_swing}. Reinforcement learning is a subject of machine learning that concerns itself with which action an actor should take to optimize reward on a future scale, and usually involves gathering data by trying actions and observing the consequences. 
 
 LEGO was interested in the methods, to see how easily this could be implemented and how large the space of potential educational use was.
 
-This additional interest allows us to implement machine learning and reinforcement learning methods in practice, studying the practical implications when learning data is gathered in the physical world. It also means that we're interested in exploring the complexity and width of the space of educational use of LEGO Mindstorms for explaining and teaching machine learning and reinforcement learning. Thus, we intend to built robots and implement reinforcement learning algorithms on them, or create visualizations of training and prediction of models using them, to explore the complexity of this task, as well as the width of the subject both for future studies and for educational use. Each robot will be designed with a goal in mind, to learn some task and possibly visualize it, and as much as possible, they will cover a wide variety of methods. The code for the project is written in Python through Jupyter notebooks, and can be found on GitHub\footnote{https://github.com/SteffenCzolbe/LEGO-machine-learning}.
+This interest sparked a project in which machine learning and reinforcement learning methods can be implemented in practice, to study the practical implications when learning data is gathered in the physical world. Exploring the complexity and width of the space of educational use of LEGO Mindstorms for explaining and teaching machine learning and reinforcement learning is also of interest. Thus, this project intends to built robots and implement reinforcement learning algorithms on them, or create visualizations of training and prediction of models using them, to explore the complexity of this task, as well as the width of the subject both for future studies and for educational use. Each robot will be designed with a goal in mind, to learn some task and possibly visualize it, and as much as possible, they will cover a wide variety of methods. The code for the project is written in Python through Jupyter notebooks, and can be found on GitHub\footnote{https://github.com/SteffenCzolbe/LEGO-machine-learning}.
 
 \section{EV3 System}
 The EV3 system is the third version of the LEGO Mindstorm family of robot toys. It contains a central processing component, called ''Brick``, to which motors, sensors and other peripheral devices can be attached. All components are embedded into plastic casings, which make them compatible with other LEGO parts. The LEGO Group markets the EV3 system to educational facilities and private persons in a package with build instructions and parts for multiple robots. The current product offering consists of 2 different packages to build a total of 9 robots, including the self-balancing two wheeled ``Gyroboy'' and a sorting machine that orders LEGO bricks based on their colour. The playful development of further robots by end users is encouraged. A large community of engaged hobby robot builders has formed around the EV3 platform.
@@ -250,7 +250,7 @@ The gyroscope initializes its orientation at system start as 0 degrees. Further,
 The colour sensor can be re-calibrated to a new relative white, but this is only used for normalization of observed colour values (originally from 0-1020) to the RGB scale. If not recalibrated, the sensor uses 300 as the maximal expected white value.
 
 \pagebreak
-\section{Colour Detection}
+\section{Colour robot}
 \subsection{Problem}
 A common first topic when learning about machine learning is the KNN algorithm, as it's simple to understand, allowing it to be a comparison for other models, or a base model to use when explaining other topics not specific to a model.
 
@@ -308,13 +308,13 @@ In this case, the robot has a list of allowed colors, starts with no data, and p
 
 'Yellow : 0.13185982' 
 
-\subsection{Sub-results}
+\subsection{Colour robot results}
 Two versions of a robot that uses KNN were implemented and built with visualization in mind. Both versions are functional, and can be used to explain and link how data affects predictions in machine learning.
 
 We implemented a simple Neural Network model, that may be useful in explaining more complicated machine learning models.
 
 We also learned a great deal about visualization and limitations to this, which will be presented and discussed in the following section.
-\subsection{Discussion}
+\subsection{Colour robot discussion}
 We encountered a number of difficulties related to these experiments, but have also found many avenues of possible future work.
 \subsubsection{Discussion: Visualization}
 We originally wanted to show the decision boundary for our learning system, to show how it changes with time. Unfortunately, we found no good way to visualize this in 3d, so instead we looked into dimensionality reduction. We tried reducing dimensionality using PCA, and plot a decision boundary in the resulting 2d space, but this proved problematic, both in our setup and generally. Since we wanted to run real-time we had issues running the PCA on the decision boundary. To get enough points for a proper boundary in 3d space we had to use at least 1 million points, which took way too long to process to be able to run real-time. If instead we didn't run real-time, we could plot the PCA values and a decision boundary in this space, but the values would be mostly meaningless. In the 3d space it at least somewhat makes sense, you have an intuition about what changes if we increase on the "red" axis and so on. In the PCA space we're left with principal components instead, and the points from previous observations would not even be stationary.
@@ -324,7 +324,7 @@ Some ways to get around this issue would be to only read two colour channels (re
 The neural network setup was made to demonstrate that the colour sensor setup can be extended to more complicated machine learning systems, to show some width of the space of possible educational use. It was implemented, but as a very simple form. It takes a number of colours initially, and predicts between these, but for more than 2 colours (or colour groups) this makes training complicated. The model was implemented such that if it predicted the first colour on our list, and we respond correct, it trains with (1,0,0,0) (or similar for more colours) while instead if we respond wrong, it trains (0,1,1,1) (so it improves every other colour). This setup is not optimal, and is simply a POC. If instead we want to focus on this task to improve it, it may be able to use methods from reinforcement or online learning, since we're dealing with a reduced feedback (right/wrong) setup (this was an idea from the start, as is obvious from the file name). The reason this wasn't implemented was a time constraint built into the setup. At the moment, prediction is done by pressing both buttons, which causes the prediction list to update, and the robot to say the highest scoring colour. At this point you can press a button for yes or no. Unfortunately, you need a lot of observations to properly train the network, which makes it very time consuming and not very education-friendly. We ran a test with 150 entries, observing only 3 different colours. After this, it could still not differentiate the 3 colours. We believe that implementing a proper reinforcement or bandit setup would greatly improve the training, but 150 observations or just 50 that all have to be done manually is still a significant barrier for the neural network setup. Other options could be to pre-load it with some amount of data, but this would remove the chance to see early learning. The output for the neural network model could of course be combined with a plot like the 3d we made for the KNN model, or a PCA/decision boundary or similar, with most of the same yields and issues as discussed before. We believe the neural network setup has potential, but has some hurdles to overcome before it can be useful in an educational setting.
 
 \pagebreak
-\section{Crawl-Robot}
+\section{Crawl robot}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{images/crawl_robot}
@@ -382,7 +382,7 @@ To apply Q-learning to the crawl robot domain, we model an action as moving the 
 \end{align*}
 The initial state for each epoch is given by $s_0 = \text{base up pivot far}$, which is the furthest extension of the arm. For fast learning, we got good results with a learning rate $\alpha = 0.5$, discount rate $\gamma = 0.8$. The exploration factor $\epsilon$ is initially set to $0.5$ and declines exponentially throughout training, allowing lots of exploration at the start of training, while gradually reducing exploration for later epochs. We chose $35$ steps per epoch, as this amount allows each epoch to explore all states multiple times. Training is stopped once the motion appears to be executed with little error.
 
-\begin{algorithm}[]
+\begin{algorithm}[H]
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
 	
@@ -412,8 +412,8 @@ The initial state for each epoch is given by $s_0 = \text{base up pivot far}$, w
 
 
 
-\subsection{Results}
-The crawl robot was trained using tabular Q-learning with the parameter choices stated in the previous section. In this section we discuss the training process and the learned result. For training, the robot is placed on a linear track. At the back of the robot, a solid target is placed to act as a point for range measurement by the ultrasonic sensor. During training, the robot explores actions and moves back and forth on the linear track. 
+\subsection{Crawl robot results}
+The crawl robot was trained using tabular Q-learning with the parameter choices stated in the previous section. In this section we present the training process and the learned result. For training, the robot is placed on a linear track. At the back of the robot, a solid target is placed to act as a point for range measurement by the ultrasonic sensor. During training, the robot explores actions and moves back and forth on the linear track. 
 
 After 20 minutes of training, the learned motion appeared near perfect and training was stopped. This corresponds to 65 epochs of training, for a total of 2275 actions. The reward gathered in each epoch is plotted in figure \ref{fig:crawl_reward}. We can see that the reward gathered in each epoch has a clear upward trend, indicating that the robot got progressively better at the task. The exploration factor is exponentially declining, as shown in figure \ref{fig:crawl_exploration}. This leads to less exploration in later epochs. The result of this is visible in the reward plot, as in later epochs the results get more consistent.
 
@@ -445,7 +445,7 @@ A recording of the full training and a presentation of the learned motion is acc
 \end{figure}
 
 
-\subsection{Discussion}
+\subsection{Crawl robot discussion}
 With the presented framework, the crawling robot is able to learn a forward crawling motion in 20 minutes. As the training process requires constant human interaction for resetting the robot, we think this amount training time is appropriate. Especially in educational settings it should be considered as an upper limit. Since the training is interactive, observing how the robot develops an increasingly stronger forwards drive during training is quite rewarding to the observer. 
 
 The learned motion is not smooth and appears abrupt, which results from the use of a discrete state space. Learning a crawling motion with this robot on a continuous state space has the potential of leading to a smoother, and possibly faster movement. A possible drawback is increased training time. Moving the arm on a continuous state space is a topic for future research.
@@ -465,27 +465,28 @@ The swing was made as a more complicated reinforcement learning task, inspired b
 \subsection{The Robot}
 The two basic robot designs seen in the video that inspired this idea\cite{youtube_swing} can be described as a "crouch"-style swing, in which the robot does up-down body movements, and a "pull-up"-style swing, in which the robot moves legs/limbs to swing.
 
-We decided to go for a "pull-up" style swing, with two legs that can move independently. See Figure \ref{fig:swing_robot}.
+We decided to go for a "pull-up" style swing, with two legs that can move independently, but instead of short arms, we expanded to a longer harness structure that functions in the same way. See Figure \ref{fig:swing_robot}.
 
 \begin{figure}[H]
 	\centering
 	\begin{subfigure}{.48\textwidth}
 		\centering
-		\includegraphics[width=1\linewidth]{images/swing_robot_front}
-		\caption{Swing robot seen from the front. At the top of the picture you can see the robot mount lodged between two tables.}
+		\includegraphics[width=1\linewidth]{images/swing_robot_front_full}
+		\caption{Swing robot seen from the front. At the top of the picture you can see the robot mount lodged between two tables, the structure in the middle is the harness.}
 		\label{fig:swing_robot_front}
 	\end{subfigure}
 	\begin{subfigure}{.48\textwidth}
 		\centering
-		\includegraphics[width=1\linewidth]{images/swing_robot_side}
+		\includegraphics[width=1\linewidth]{images/swing_robot_side_right}
 		\caption{Swing robot seen from the side, here the gyroscope and the leg mounting is visible.}
 		\label{fig:swing_robot_side}
 	\end{subfigure}%
-	\caption{The Swing robot design. The legs can move independently, while the 'arms' swing freely on a bar. A gyroscope is mounted on the back of the robot.}
+	\caption{The Swing robot design. The legs can move independently, while the harness swing freely on a bar. A gyroscope is mounted on the back of the robot.}
 	\label{fig:swing_robot}
 \end{figure}
 
-To be able to swing, the robot must move some amount of counterweight, this is achieved by having each "leg" consist of a large motor mounted backwards, such that the motor part is moved, see Figure \ref{fig:swing_robot_side}.
+To be able to swing, the robot must move some amount of counterweight, this is achieved by having each "leg" consist of a large motor mounted backwards, such that the motor part is moved, see Figure \ref{fig:swing_robot_side}. To reduce training complexity for the first try, the legs are physically stuck together, and moved as one.
+
 On the back of the robot, a gyroscope is mounted, to measure angle and acceleration. The height of the gyroscope was chosen to provide the most stable observations and the least drift in angle over time.
 
 This design was chosen to allow for both easy and complicated setups, where the legs can be controlled together or individually.
@@ -495,19 +496,36 @@ Instead of creating a large swing frame, a mount was made to fit in between two 
 
 
 \subsection{The Learning}
-To train the swing robot, we implemented covariance matrix adaptation evolution strategy (CMA-ES). CMA-ES is regarded as the state of the art in evolutionary and numerical optimization, and we have adapted it for reinforcement learning. Evolutionary strategies optimize by creating new candidate solutions that can be seen as offspring of the previous candidate solutions, featuring a combination of qualities, maybe with some mutations.
+To train the swing robot, covariance matrix adaptation evolution strategy (CMA-ES) was implemented. CMA-ES is regarded as the state of the art in evolutionary and numerical optimization, and we have adapted it for reinforcement learning. Evolutionary strategies optimize by creating new candidate solutions that can be seen as offspring of the previous candidate solutions, featuring a combination of qualities, with some random mutations.
 
 For training the swing, an epoch consists of 30 seconds, and the reward was set to be the highest absolute acceleration achieved in the epoch.
-\subsection{Results}
+\subsection{Swing robot results}
 final results
-\subsection{Discussion}
+\subsection{Swing robot discussion}
 includes issues / future work
 ability to move legs independently, better single-leg movement (when legs count as one), recurrent version, better response speed for more (better) sensor observations and faster motor controls
 vibrations from size of swing
-\section{Future Work}
-Shared/independent
-future robots/  multi actor learning
-generalized systems (one system that can learn both crawling, swinging etc)
+
+\section{Combined results}
+A colour detection robot has been created, and two forms of KNN have been implemented for it, as well as a neural network. Forms of visualization have been explored and implemented, see for example Figure \ref{fig:colour_KNN_binary}.
+ 
+A crawling robot has been created, which learns a crawling motion almost to perfection after about 20 minutes of training. It learns using tabular Q-learning, and a video of said training has been posted\cite{youtube_crawl_training}.
+
+A swing robot has been created, and CMA-ES was implemented for it.
+
+We have created a diverse set of robots that complete different tasks using different learning algorithms, and have documented this using pictures, videos, plots and other forms of visual aids. Future developments of each type of robot has been discussed, covering wide ranges of mathematical and practical difficulty levels.
+\section{Combined Discussion}
+
+highlights from previous discussion sections
+discussion of overall topics
+\subsection{Future Work}
+This project has sparked some new ideas for how the LEGO mindstorms robots can be used for future projects, both specific robots learning specific tasks, and more overall subjects to work on.
+
+Early on in the project, we learned that other systems had used faster motors or sensors not available from LEGO, but from secondary sites\footnote{such as http://www.mindsensors.com/}. For this project, we decided to work with what we had from LEGO, but it could be interesting to see how faster or more accurate motors could change training, or if training becomes simpler with access to for example an angular sensor for the swing. Additionally, this may open up robots that require faster reaction times, such as the pole balancing robot seen here \cite{youtube_pole}.
+
+During a presentation, it was brought up how well this would work in a classroom featuring multiple robots. This inspired the idea that multiple robots could train the same task and share knowledge to train faster. The subject of multi-actor learning, how best to distribute tasks and combine learning, could be large and interesting, and could use several types of robots.
+
+In a setup in which the same brick can be used for many different tasks, and in which LEGO may be interested in implementing a general setup in their distributions, general solutions may be worth exploring. For our robots, we implemented separate systems, tailor made for the situation at hand, but some systems can be trained using the same learning system, such as googles Atari bot from 2013, which achieved high performance on 7 different games, using the same learning system\cite{google_deepmind_atari}. It may be interesting to make more general systems that can learn several kinds of similar robots, but it could also be interesting to study a system that can handle modular robots, with varying amounts of motors and/or sensors.
 
 
 \section{Individual contributions}
